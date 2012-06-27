@@ -1,0 +1,231 @@
+
+<head>
+    <title>access rules</title>
+<style>
+    body        { background: #fff; text-color: #000; margin-left:  40px;   font-size:  0.9em;  font-family: sans-serif; max-width: 800px; }
+    h1          { background: #ffb; text-color: #000; margin-left: -30px;   border-top:    5px  solid #ccc; }
+    h2          { background: #ffb; text-color: #000; margin-left: -20px;   border-top:    3px  solid #ddd; }
+    h3          { background: #ffb; text-color: #000; margin-left: -10px; }
+    h4          { background: #ffb; text-color: #000; }
+    code        { font-size:    1.1em;  background:  #ddf; text-color: #000; }
+    pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
+    pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
+</style>
+</head>
+
+<p style="text-align:center">
+    <a href="master-toc.html">master TOC</a>
+|
+    <a href="index.html">main page</a>
+|
+    <a href="index.html#license">license</a>
+</p>
+<p style="text-align:center">
+<font color="gray">This is for gitolite "g3"; for older (v2.x) documentation click <a href="http://sitaramc.github.com/gitolite/g2/master-toc.html">here</a></font>
+</p>
+<h2><a name="rules"></a> access rules</h2>
+
+<p>In the following description, "user" means "user or a <a href="groups.html">group</a> that
+he/she is a member of", and "repo" means "repo, or a group that it is a member
+of, or a (<a href="wild.html">wild</a> repo) pattern that matches it, or a group that contains a
+pattern that matches it".</p>
+
+<h3>what do rules look like</h3>
+
+<p>Here's an example ruleset.</p>
+
+<pre><code>@staff          =   dilbert alice wally bob
+
+repo foo
+    RW+         =   dilbert     # line 1
+    RW+ dev     =   alice       # line 2
+    -           =   wally       # line 3
+    RW  temp/   =   @staff      # line 4
+    R           =   ashok       # line 5
+</code></pre>
+
+<p>A rule line has the structure</p>
+
+<pre><code>&lt;permission&gt; &lt;zero or more refexes&gt; = &lt;one or more users/user groups&gt;
+</code></pre>
+
+<p>The most commonly used permissions are:</p>
+
+<ul>
+<li>R, for read only</li>
+<li>RW, for push existing ref or create new ref</li>
+<li>RW+, for  "push -f" or ref deletion allowed (i.e., destroy
+information)</li>
+<li><code>-</code> (the minus sign), to <strong>deny</strong> access.</li>
+</ul>
+
+<p>There are also other, less commonly used, <a href="write-types.html">types of permissions</a>.</p>
+
+<p>A <a href="refex.html">refex</a> is an expression that matches the ref (i.e., branch or tag) being
+pushed.</p>
+
+<p><font color="gray">You can also use <a href="vref.html">virtual refs</a> to perform extra
+checks and controls that you can't do with just the normal ref (like
+refs/heads/master) being pushed.  The most common example is restricting
+pushes by dir/file name, but there are lots of other possibilities.</font></p>
+
+<h3>how are the rules checked</h3>
+
+<p>Note that gitolite first <a href="rules.html#rule-accum">accumulates the rules</a> before checking
+access.</p>
+
+<h4>read access -- clone, fetch, archive</h4>
+
+<p>Read access is checked once, just before passing control to git-upload-pack or
+git-archive-pack.  At this point gitolite only knows the repo name, the user
+name, and the fact that it is a read operation.</p>
+
+<p>If the set of rules for this user on this repo has at least one rule where the
+permission field contains an "R", access is granted.  If there are none,
+access is denied.</p>
+
+<p>The <a href="refex.html">refex</a> field is ignored for this check.  (Git does not allow
+distinguishing one ref from another for access control during read
+operations).</p>
+
+<p>Deny rules (the "-" permission) are ignored for this check.  In our example,
+line 3 does not prevent wally from cloning the repo, because line 4 permits
+it.  (This is the default behaviour.  You can change that by using the
+<a href="rules.html#deny-rules">deny-rules</a> option).</p>
+
+<h4>write access -- push</h4>
+
+<p>Write access is checked twice, once before passing control to
+git-receive-pack, and once from within the update hook.</p>
+
+<p>The <strong>first check</strong> is identical to the one for read access, except of course
+the permission field must contain a "W".  As before, deny rules are ignored,
+(line 3 does not prevent wally from trying to push because line 4 allows it),
+and you can override that using the <a href="rules.html#deny-rules">deny-rules</a> option.</p>
+
+<p>The <a href="refex.html">refex</a> field is ignored for this check, because at this point we don't
+know what refs are going to be pushed.</p>
+
+<p>The <strong>second check</strong> happens from within the update hook.  This check is much
+more complex because deny rules are considered, which in turn means the
+<em>sequence</em> of the rules makes a difference now.</p>
+
+<p>Also, this time, git supplies us with three more pieces of information: the
+name of the ref being updated (like "refs/heads/master"), the old SHA, and the
+new SHA.  This information is sufficient to determine whether this is a normal
+push or a forced, (a.k.a rewind), push.  A normal push requires the permission
+field to contain a "W", while a forced push requires it to contain a "+".</p>
+
+<p>Here's how the actual rule matching happens:</p>
+
+<ul>
+<li><p>all the rules for this user and this repo are <a href="rules.html#rule-accum">collected</a> and
+examined <em>in the sequence</em> they appear in the conf file</p></li>
+<li><p>for each rule:</p>
+
+<ul>
+<li>If the ref does not match the <a href="refex.html">refex</a>, the rule is skipped.</li>
+<li>If it's a deny rule, access is denied and the matching stops.</li>
+<li>If the permission field matches the specific <a href="write-types.html">type of
+write</a> operation, access is allowed and the matching
+stops.</li>
+</ul></li>
+<li><p>If no rule ends with a decision, ("fallthru"), access is denied.</p></li>
+</ul>
+
+<p>Now all you need is to understand how <a href="refex.html">refex</a> matching happens and how the
+permissions match the various <a href="write-types.html">types of write operations</a>.</p>
+
+<h3><a name="permsum"></a> summary of permissions</h3>
+
+<p>The full set of permissions, in regex syntax, is <code>-|R|RW+?C?D?M?</code>.  This
+expands to one of <code>-</code>, <code>R</code>, <code>RW</code>, <code>RW+</code>, <code>RWC</code>, <code>RW+C</code>, <code>RWD</code>, <code>RW+D</code>, <code>RWCD</code>,
+or <code>RW+CD</code>, all but the first two optionally followed by an <code>M</code>.  And by now
+you know what they all mean.</p>
+
+<h2>additional topics</h2>
+
+<h3><a name="rule-accum"></a> rule accumulation</h3>
+
+<p>Gitolite was meant to collect rules from multiple places and apply them all.
+For example:</p>
+
+<pre><code># we have 3 specifically named FOSS projects, but we also consider any
+# project in the foss/ directory to be FOSS.
+@FOSS-projects  =   git gitolite linux foss/..*
+
+# similarly for proprietary projects
+@prop-projects  =   foo bar baz prop/..*
+
+# our users are divided into staff, interns, and bosses
+@staff          =   alice dilbert wally
+@interns        =   ashok
+@bosses         =   PHB
+
+# we have certain policies.  The first is that FOSS projects are readable
+# by everyone
+repo @FOSS-projects
+    R   =   @all
+
+# the second is that bosses can read any repo if they wish to
+repo @all
+    R   =   @bosses
+
+# now we have specific rules for specific projects
+repo git
+    ...some rules...
+
+...etc...
+</code></pre>
+
+<p>As you can see, for each user+repo combination, several rules will apply.
+Gitolite combines them all into one list (in the sequence they are found in
+the conf file), before applying the access checks.</p>
+
+<p>This extends to patterns also.  For example, if you have this:</p>
+
+<pre><code>repo foss/apache
+    ...some rules...
+</code></pre>
+
+<p>then, because this repo fits the pattern <code>foss/..*</code>, it is considered part of
+the @FOSS-projects group, so all the rules that apply to that group are in
+play when someone accesses foss/apache.</p>
+
+<p>This is what we meant by "repo, or a group that it is a member of, or a
+(<a href="wild.html">wild</a> repo) pattern that matches it, or a group that contains a pattern
+that matches it", up at the top of this document.</p>
+
+<h3><a name="deny-rules"></a> applying deny rules during the first check</h3>
+
+<p>The access rules above show that you cannot make an exception to a group for
+the first check, i.e., you cannot lock Wally out of read access that other
+members of @staff have.</p>
+
+<p>Here's another situation.  Let's say you have this at the end of your
+gitolite.conf file:</p>
+
+<pre><code>repo @all
+    R   =   gitweb daemon
+</code></pre>
+
+<p>but you don't want the gitolite-admin repo showing up on gitweb.  This is the
+same situation -- you want to make an exception in '@all' this time.</p>
+
+<p>Here's how to do that:</p>
+
+<pre><code>repo gitolite-admin
+    -   =   gitweb daemon
+    option deny-rules = 1
+
+repo @all
+    R   =   gitweb daemon
+</code></pre>
+
+<p>When you set the 'deny-rules' option for a repo, you're telling the pre-git
+checks (i.e., the read access check and the first write access check), to pay
+attention to the deny rules, which otherwise they ignore.</p>
+
+<p>Note that, any time deny rules are in play, the order matters; the <code>-</code> rule
+must come <em>before</em> the <code>R</code> rule.  Also, as a reminder, refexes are ignored for
+the first check.</p>

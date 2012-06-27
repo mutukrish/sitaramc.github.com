@@ -1,0 +1,65 @@
+
+<head>
+    <title>gitolite performance</title>
+<style>
+    body        { background: #fff; text-color: #000; margin-left:  40px;   font-size:  0.9em;  font-family: sans-serif; max-width: 800px; }
+    h1          { background: #ffb; text-color: #000; margin-left: -30px;   border-top:    5px  solid #ccc; }
+    h2          { background: #ffb; text-color: #000; margin-left: -20px;   border-top:    3px  solid #ddd; }
+    h3          { background: #ffb; text-color: #000; margin-left: -10px; }
+    h4          { background: #ffb; text-color: #000; }
+    code        { font-size:    1.1em;  background:  #ddf; text-color: #000; }
+    pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
+    pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
+</style>
+</head>
+
+<p style="text-align:center">
+    <a href="master-toc.html">master TOC</a>
+|
+    <a href="index.html">main page</a>
+|
+    <a href="index.html#license">license</a>
+</p>
+<p style="text-align:center">
+<font color="gray">This is for gitolite "g3"; for older (v2.x) documentation click <a href="http://sitaramc.github.com/gitolite/g2/master-toc.html">here</a></font>
+</p>
+<h1>gitolite performance</h1>
+
+<p>Gitolite is pretty efficient in most cases, and generally nothing needs to be
+done.  But if you think you have a performance problem, here are some tips.</p>
+
+<ul>
+<li><p>Look in the gitolite log file after any operation that you think ran
+slowly.  In particular, pushing to the admin repo, or a user creating a
+new wild repo, might be a little slow, and the log file will tell you a
+bit more detail on what took time.</p></li>
+<li><p>If you don't use gitweb or git-daemon, or use them but are perfectly happy
+to control access to them from outside gitolite, you can comment out the
+corresponding lines in the POST_CREATE and POST_COMPILE trigger lists in
+the rc file.</p></li>
+<li><p>If you can't get rid of those scripts, and they are still taking too long,
+you can make them run in the background.  They'll eventually finish but
+the user doesn't have to wait.  See src/triggers/bg.</p></li>
+<li><p>If you're more concerned about your users' time when they create a new
+wild repo (and not so much about the admin push taking time), you can fix
+a couple of scripts and send me a patch :)</p>
+
+<p>Here's the scoop:</p>
+
+<p>Scripts invoked via <code>POST_CREATE</code> <em>do</em> get information about what repo has
+just been created.  However, the gitweb and daemon scripts are not set to
+take advantage of this, only the git-config one is.  So use the git-config
+script as an example, and/or read the <a href="triggers.html">triggers</a> documentation, and fix
+the other two programs.</p>
+
+<p>(This should be easy enough for the daemon update, but the gitweb update
+may be a little more tricky, since it may involve <em>deleting</em> lines from
+the "projects.list" file.)</p></li>
+</ul>
+
+<hr />
+
+<p>Finally, there's still one slight bit of inefficiency that the ultra-picky
+will want to fix.  For those people, there's a version of gitolite that uses
+the redis database as a cache to speed things up even more.  You can get it
+from the branch 'redis', and the documentation is <a href="cache.html">here</a>.</p>
