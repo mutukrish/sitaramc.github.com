@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -34,10 +59,13 @@
 <li><p>Make sure that:</p>
 
 <ul>
-<li>They are all <em>bare</em> repos.</li>
-<li>All the repo names end in ".git".</li>
+<li>They are all <em>bare</em> repos.
+</li>
+<li>All the repo names end in ".git".
+</li>
 <li>All the files and directories are owned and writable by the gitolite
-<a href="install.html#nnc">hosting user</a> (especially true if you copied them as root).</li>
+<a href="install.html#nnc">hosting user</a> (especially true if you copied them as root).
+</li>
 </ul></li>
 <li><p>Run <code>gitolite setup</code>.  <strong>If you forget this step, you can also forget
 about write access control!</strong></p></li>

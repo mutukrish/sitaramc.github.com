@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -42,9 +67,12 @@ sure you understand what is gitolite's responsibility and what isn't.</p></li>
 <h2>assumptions:</h2>
 
 <ul>
-<li>Apache 2.x and git installed.</li>
-<li>Httpd runs under the "apache" userid; adjust instructions below if not.</li>
-<li>Similarly for "/var/www" and other file names/locations.</li>
+<li>Apache 2.x and git installed.
+</li>
+<li>Httpd runs under the "apache" userid; adjust instructions below if not.
+</li>
+<li>Similarly for "/var/www" and other file names/locations.
+</li>
 </ul>
 
 <h2>instructions</h2>
@@ -95,9 +123,12 @@ and so on) <em>can</em> be run on the server, but it's not straightforward.  Ass
 you installed exactly as given in this document, you should</p>
 
 <ul>
-<li>get a shell by using, say, <code>su -s /bin/bash - apache</code></li>
-<li>run <code>export HOME=$HOME/gitolite-home</code></li>
-<li>run <code>export PATH=$PATH:$HOME/bin</code></li>
+<li>get a shell by using, say, <code>su -s /bin/bash - apache</code>
+</li>
+<li>run <code>export HOME=$HOME/gitolite-home</code>
+</li>
+<li>run <code>export PATH=$PATH:$HOME/bin</code>
+</li>
 </ul>
 
 <p>and <em>then</em> you can run <code>gitolite &lt;subcommand&gt;</code></p>

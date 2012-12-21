@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -31,13 +56,13 @@ authentication, so here's some info on adding and removing users.</p>
 
 <blockquote>
   <hr />
-
-<p><em>WARNING: Do NOT add new repos or users manually on the server.  Gitolite
-  users, repos, and access rules are maintained by making changes to a
-  special repo called 'gitolite-admin' and pushing those changes to the
-  server.</em></p>
-
-<hr />
+  
+  <p><em>WARNING: Do NOT add new repos or users manually on the server.  Gitolite
+    users, repos, and access rules are maintained by making changes to a
+    special repo called 'gitolite-admin' and pushing those changes to the
+    server.</em></p>
+  
+  <hr />
 </blockquote>
 
 <p>All operations are in a clone of the gitolite-admin repo.</p>

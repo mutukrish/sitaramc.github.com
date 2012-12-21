@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -30,6 +55,15 @@
 <p>"Don't Panic!"</p>
 
 <hr />
+
+<h2>install/setup issues</h2>
+
+<p>Most install/setup issues are caused by lack of ssh knowledge.  Ssh is a
+complex beast, and -- unless you are using the <a href="http.html">http</a> mode -- can cause
+problems for people who are not familiar with its quirks.</p>
+
+<p><strong>Be prepared to spend some time reading the <a href="ssh.html">ssh</a> documentation that comes
+with gitolite</strong>.</p>
 
 <h2><a name="lost-key"></a> lost admin key/access</h2>
 
@@ -124,48 +158,18 @@ don't need gitolite!</p></li>
 
 <h2><a name="ue"></a> uncommon errors</h2>
 
-<ul>
-<li><p><code>WARNING: split conf not set, gl-conf present for &lt;repo&gt;</code></p>
-
-<p>(Case 1) you copied a bare repo ("repo.git") from another g3 site (or g2
-with <code>GL_BIG_CONFIG</code> on).  Then you pushed a change to "gitolite.conf" or
-ran certain server-side commands without adding the repo to the conf.</p>
-
-<p>Conversely, you removed "repo" from "gitolite.conf" but did not remove the
-actual "repo.git" on disk.</p>
-
-<p>(Case 2) This can also happen if you changed something like this</p>
-
-<pre><code>repo foo
-    ...&lt;some rules&gt;...
-</code></pre>
-
-<p>to this</p>
-
-<pre><code>@grp = foo
-repo @grp
-    ...&lt;some rules&gt;...
-</code></pre>
-
-<p>Also, even running <code>gitolite setup</code> will not fix this.</p>
-
-<p>The root cause is an internal consistency check that I do not wish to
-disable or subvert.  It is there for a reason, and I would prefer a
-warning that a human can investigate.</p>
-
-<p>If you're sure the reasons are one of the two above, you can either add
-the repo to the conf file in case 1, or manually remove the gl-conf file
-from the repo.git directory in case 2.</p>
-
-<p>Either way, run <code>gitolite setup</code> afterwards to make sure things are in
-good shape.</p>
-
-<p>If you think neither of those is the cause, email me.</p></li>
-</ul>
+<p>(This page intentionally left blank)</p>
 
 <h2><a name="nonstd"></a> non-standard configs that'll trip you up</h2>
 
 <ul>
+<li><p>if your 'git' binary is in a non-PATH location, or you have more than one
+version and want a specific one to be picked up, you will have to add a
+line like this at the end of the rc file (outside the <code>%RC</code> hash, but
+before the<code>1;</code> line):</p>
+
+<pre><code>$ENV{PATH} = "/your/git/path:$ENV{PATH}";
+</code></pre></li>
 <li><p>having sshd setup to put the authorized_keys file somewhere other than
 the default (which is in .ssh in the <a href="install.html#nnc">hosting user</a>'s home directory).</p></li>
 <li><p>having sshd setup to not allow incoming ssh for the hosting user.  Check
@@ -186,13 +190,20 @@ lot more patience than I do, bless 'em!)</p>
 <li><p><strong>Client side software</strong></p>
 
 <ul>
-<li>putty/plink</li>
-<li>jgit/Eclipse</li>
-<li>Mac OS client <strong>or</strong> server</li>
-<li>putty/plink</li>
-<li>windows as a server</li>
-<li>...probably some more I forgot; will update this list as I remember...</li>
-<li>did I mention putty/plink?</li>
+<li>putty/plink
+</li>
+<li>jgit/Eclipse
+</li>
+<li>Mac OS client <strong>or</strong> server
+</li>
+<li>putty/plink
+</li>
+<li>windows as a server
+</li>
+<li>...probably some more I forgot; will update this list as I remember...
+</li>
+<li>did I mention putty/plink?
+</li>
 </ul></li>
 <li><p><strong>Ssh</strong></p>
 

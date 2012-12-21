@@ -11,6 +11,29 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
@@ -18,46 +41,83 @@
 |
     <a href="index.html">main page</a>
 |
+    <a href="gitolite.html">single-page</a>
+|
     <a href="index.html#license">license</a>
 </p>
 <p style="text-align:center">
 <font color="gray">This is for gitolite "g3"; for older (v2.x) documentation click <a href="http://sitaramc.github.com/gitolite/g2/master-toc.html">here</a></font>
 </p>
-<h2>idiot-proof setup for gitolite</h2>
+<h1>idiot-proof setup for gitolite</h1>
 
-<p>WARNING 1: this document uses my new, Linus-inspired, motto: people who get
-offended, <em>should</em> be offended.</p>
+<p>If I gave you this link to read, it most likely means either:</p>
 
-<p>WARNING 2: contains more words in ALL CAPS than all my other documents put
-together.</p>
+<ul>
+<li>(most common reason) you got really confused by <a href="ssh.html">ssh</a>
+</li>
+<li>(a bit less common) you got confused by how to administer users and repos
+using gitolite
+</li>
+</ul>
 
-<p>WARNING 3: this document will work for any Linux on which git has already been
-installed.  BSDs, or legacy systems like Solaris, also should work but I can't
-guarantee it or test it.</p>
+<p>Don't take the title personally.  The "idiot" in the title is indeed a real
+person who once bugged me so much I wrote this for him.  However, I have since
+realised that this is also useful for (a) people for whom English is not the
+first language and (b) people who really should not be doing technical work at
+this level, but are forced to do it by circumstances.</p>
 
-<hr />
+<ul>
+<li><a href="ips.html">idiot-proof setup for gitolite</a>
+<ul>
+<li>pre-requisites
+</li>
+<li>additional restrictions that seem unnecessary
+</li>
+<li>no support for this document
+</li>
+<li>assumptions
+</li>
+<li>installation tasks
+</li>
+<li>administration tasks
+</li>
+</ul>
+</li>
+</ul>
 
-<p>Some people seem to get terribly, <strong>terribly</strong> confused by ssh.  If you've
-read through all the <a href="ssh.html">documentation on ssh</a> that came with gitolite, yet
-you <em>still</em> cannot get things to work, you have two choices:</p>
+<h2>pre-requisites</h2>
 
-<ol>
-<li><p>exchange your "developer" badge for a "manager" badge and then hire
-someone to do this.</p></li>
-<li><p>start over with the instructions below.  They include some DRASTIC
-measures, requirements, and restrictions, almost NONE of which are
-normally necessary, but it's either that or a suit and tie from tomorrow
-so play along.</p></li>
-</ol>
+<ul>
+<li>any Linux machine on which git has already been installed
+</li>
+<li>probably any BSD or legacy system like Solaris will also work, but I have
+not tested them
+<ul>
+<li>I do not consider Apple devices to be Unix enough; it should work, but
+please do not ask me for help if it does not.
+</li>
+</ul>
+</li>
+</ul>
 
-<p><strong>IMPORTANT</strong>: Do NOT ask for help on these instructions unless you have kept
-a detailed log of every command you typed, and the complete response you got.
-I do not ask for this information to help you -- that's only a front.  I
-<em>know</em> these instructions work (at least on any Linux that already has git
-installed), so the real reason is to find where you mistyped something and
-mock you for that.</p>
+<h2>additional restrictions that seem unnecessary</h2>
 
-<h3>Assumptions</h3>
+<p>People who <strong>do</strong> understand ssh will realise that this document contains many
+extra restrictions and constraints that are not actually needed.  That's the
+whole point -- I'm compensating for lack of ssh knowledge by removing things
+that trip people up.</p>
+
+<h2>no support for this document</h2>
+
+<p>If even this document does not help you install gitolite, I probably cannot
+help you.  Either you did not follow the instructions carefully <font
+color="gray">(maybe some task has to be run on your workstation, but you ran
+it on the server, or you ran something as root when it should be as the
+hosting user, etc.)</font>, or your environment is far too different from
+standard Unix, or you have some other problem.  In any case, it is not
+something I can help with.  Sorry.</p>
+
+<h2>assumptions</h2>
 
 <ul>
 <li><p>your name is Ron.  Substitute accordingly in the instructions below.</p></li>
@@ -66,7 +126,7 @@ mock you for that.</p>
 <li><p>you have root access on this server.</p></li>
 </ul>
 
-<h3>Tasks</h3>
+<h2>installation tasks</h2>
 
 <ol>
 <li><p>Create a new userid on the server, say <code>git</code>.  This will be the <strong>hosting
@@ -78,19 +138,25 @@ will use URLs like <code>git@server:reponame</code> or <code>ssh://git@server/re
 <p>If the name you want already exists, then:</p>
 
 <ul>
-<li>log in as root</li>
+<li>log in as root
+</li>
 <li>if you have any data on that user's HOME directory save it somewhere
-else</li>
-<li>delete the userid</li>
-<li>obliterate the home directory of the user (since on most systems
-merely deleting the user does not remove the home directory).</li>
-<li>re-create the userid again</li>
+else
+</li>
+<li>delete the userid
+</li>
+<li>completely wipe out (erase) the home directory of the user (since on
+most systems merely deleting the user does not remove the home
+directory)
+</li>
+<li>re-create the userid again
+</li>
 </ul></li>
 <li><p>If you don't already have one, make yourself an ssh keypair <strong>on your
 workstation</strong>.</p>
 
-<p>Do NOT, in a fit of inspiration and energy, add this public key to the
-authorised keys file on the newly created hosting user!</p>
+<p>Do NOT add this public key to the authorised keys file on the newly
+created hosting user!</p>
 
 <p>Your ONLY access to the new (<code>git</code>) userid should be by logging onto the
 server as root, then running <code>su - git</code>.</p></li>
@@ -128,4 +194,67 @@ $HOME/bin/gitolite setup -pk /tmp/ron.pub
 </code></pre>
 
 <p>(do I have to mention that your SHAs will be different?)</p></li>
+</ol>
+
+<h2>administration tasks</h2>
+
+<p>Most day-to-day administration is done by making changes to a clone of the
+gitolite-admin repo and pushing.  (There are some things that are done by
+editing <code>$HOME/.gitolite.rc</code> on the server, but those are too advanced for
+this tutorial so we will ignore that).</p>
+
+<ol>
+<li><p>To start administering gitolite, clone the gitolite-admin repo:</p>
+
+<pre><code>git clone git@server:gitolite-admin
+</code></pre></li>
+<li><p>Now go to the new directory this creates, and look around:</p>
+
+<pre><code>cd gitolite-admin
+ls -A
+</code></pre>
+
+<p>which gives you</p>
+
+<pre><code>conf/  .git/  keydir/
+</code></pre>
+
+<p>Ignoring the ".git" and exploring further:</p>
+
+<pre><code>ls -A conf keydir
+</code></pre>
+
+<p>which says:</p>
+
+<pre><code>conf:
+gitolite.conf
+
+
+keydir:
+ron.pub
+</code></pre></li>
+<li><p>Let's say you want to add your colleague Alice.  She has sent you her ssh
+public key by email (the file is called <code>id_rsa.pub</code>).  Save this file as
+/tmp/alice.pub, then do this:</p>
+
+<pre><code># still in your gitolite-admin clone, from the previous step
+cp /tmp/alice.pub keydir
+git add keydir
+git commit -m 'new user alice'
+git push
+</code></pre></li>
+<li><p>Well, that might not be sufficient.  There aren't any new repos for alice
+to play with, yet.  So here's what you do: edit "conf/gitolite.conf" and
+add something like to the end:</p>
+
+<pre><code>repo foo
+    RW+     =   alice
+    R       =   ron
+</code></pre>
+
+<p>Save the file, then <code>git add conf; git commit -m 'new repo foo'; git
+push</code>.</p>
+
+<p>This will automatically the brand new repo called "foo" on the server, and
+alice will be able to clone from it, or push anything to it.</p></li>
 </ol>

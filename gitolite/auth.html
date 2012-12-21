@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -37,12 +62,12 @@ authentication.  It only does authorisation</strong>.</font></p>
 
 <blockquote>
   <p><strong>Authentication</strong> is the process of verifying that you are who you claim
-  to be.  An authentication system will establish that I am the user
-  "sitaram" on my work system.  The one behind gmail will similarly
-  establish that I am "sitaramc".  And so on...</p>
-
-<p><strong>Authorisation</strong> is the process of asking what you want to do and
-  deciding if you're allowed to do it or not.</p>
+    to be.  An authentication system will establish that I am the user
+    "sitaram" on my work system.  The one behind gmail will similarly
+    establish that I am "sitaramc".  And so on...</p>
+  
+  <p><strong>Authorisation</strong> is the process of asking what you want to do and
+    deciding if you're allowed to do it or not.</p>
 </blockquote>
 
 <p>Now, if you managed to read about <a href="glssh.html">gitolite and ssh</a>, you

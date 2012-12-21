@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -30,52 +55,73 @@ not considered "core".  This keeps the core simpler, and allows you to enhance
 gitolite for your own purposes without too much fuss.  (As an extreme example,
 even mirroring is not in core now!)</p>
 
-<p>This document will tell you about the types of non-core programs, and
-how/where to install your own.  (Actually <em>writing</em> the code is described in
-the <a href="dev-notes.html">developer notes</a> page).</p>
+<p>Here's how to find out more:</p>
+
+<ul>
+<li><p>this document describes the types of non-core programs and how/where to
+install your own</p></li>
+<li><p>the <a href="dev-notes.html">developer notes</a> page tells you how to write your own
+non-core programs</p></li>
+<li><p>the <a href="non-core.html">list of non-core programs</a> talks about what's already
+shipped with gitolite, with a brief description of each</p></li>
+</ul>
 
 <hr />
 
 <ul>
 <li><a href="cust.html">customising gitolite</a>
 <ul>
-<li>introduction</li>
+<li><a href="cust.html#ncintro">introduction</a>
+</li>
 <li><a href="cust.html#ncloc">locations</a>
 <ul>
-<li>default/primary location of non-core programs</li>
-<li><a href="cust.html#localcode">alternate location -- the <code>LOCAL_CODE</code> rc variable</a></li>
-<li><a href="cust.html#pushcode">managing custom code via the gitolite-admin repo</a></li>
-</ul></li>
+<li>default/primary location of non-core programs
+</li>
+<li><a href="cust.html#localcode">alternate location -- the <code>LOCAL_CODE</code> rc variable</a>
+</li>
+<li><a href="cust.html#pushcode">managing custom code via the gitolite-admin repo</a>
+</li>
+</ul>
+</li>
 <li><a href="cust.html#nctypes">types of non-core programs</a>
 <ul>
-<li><a href="cust.html#commands">gitolite "commands"</a></li>
-<li><a href="cust.html#hooks">hooks and gitolite</a></li>
-<li><a href="cust.html#sugar">syntactic sugar</a></li>
-<li>triggers</li>
-<li>VREFs</li>
-</ul></li>
-</ul></li>
+<li><a href="cust.html#commands">gitolite "commands"</a>
+</li>
+<li><a href="cust.html#hooks">hooks and gitolite</a>
+</li>
+<li><a href="cust.html#sugar">syntactic sugar</a>
+</li>
+<li>triggers
+</li>
+<li>VREFs
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 <hr />
 
-<h2>introduction</h2>
+<h2><a name="ncintro"></a> introduction</h2>
 
 <p>There are 5 basic types of non-core programs.</p>
 
 <ul>
 <li><em>Commands</em> can be run from the shell command line.  Among those, the ones
-listed in the COMMANDS hash of the rc file can also be run remotely.</li>
-<li><em>Hooks</em> are standard git hooks.</li>
+listed in the COMMANDS hash of the rc file can also be run remotely.
+</li>
+<li><em>Hooks</em> are standard git hooks.
+</li>
 <li><em>Sugar scripts</em> change the conf language for your convenience.  The word
-sugar comes from "syntactic sugar".</li>
+sugar comes from "syntactic sugar".
+</li>
 <li><em>Triggers</em> are to gitolite what hooks are to git.  I just chose a
-different name to avoid confusion and constant disambiguation in the docs.</li>
-<li><strong>VREFs</strong> are extensions to the access control check part of gitolite.</li>
+different name to avoid confusion and constant disambiguation in the docs.
+</li>
+<li><strong>VREFs</strong> are extensions to the access control check part of gitolite.
+</li>
 </ul>
-
-<p><a href="non-core.html">Here</a> is a list of non-core programs shipped with gitolite, with
-some description of each.</p>
 
 <h2><a name="ncloc"></a> locations</h2>
 
@@ -86,11 +132,15 @@ tell you where the programs reside.  Within that directory, the locations of
 non-core programs are:</p>
 
 <ul>
-<li><code>commands</code> for commands.</li>
-<li><code>syntactic-sugar</code> for sugar scripts.</li>
+<li><code>commands</code> for commands.
+</li>
+<li><code>syntactic-sugar</code> for sugar scripts.
+</li>
 <li><code>triggers</code> and <code>lib/Gitolite/Triggers</code> for triggers (<a href="triggers.html">this</a> will
-explain the difference).</li>
-<li><code>VREF</code> for <a href="vref.html">VREFs</a>.</li>
+explain the difference).
+</li>
+<li><code>VREF</code> for <a href="vref.html">VREFs</a>.
+</li>
 </ul>
 
 <h3><a name="localcode"></a> alternate location -- the <code>LOCAL_CODE</code> rc variable</h3>
@@ -115,11 +165,16 @@ variable, then its value (<strong>please use a FULL path</strong>) describes a l
 where you can have any or all of these subdirectories:</p>
 
 <ul>
-<li><code>commands</code></li>
-<li><code>hooks/common</code></li>
-<li><code>syntactic-sugar</code></li>
-<li><code>triggers</code> and <code>lib/Gitolite/Triggers</code></li>
-<li><code>VREF</code></li>
+<li><code>commands</code>
+</li>
+<li><code>hooks/common</code>
+</li>
+<li><code>syntactic-sugar</code>
+</li>
+<li><code>triggers</code> and <code>lib/Gitolite/Triggers</code>
+</li>
+<li><code>VREF</code>
+</li>
 </ul>
 
 <p>You might have noticed there's a new <code>hooks/common</code> directory here so you can
@@ -164,6 +219,8 @@ commands by saying:</p>
 
 <p>Very few commands are designed to be run both ways, but it can be done, by
 checking for the presence of env var <code>GL_USER</code>.</p>
+
+<p>All commands respond to a single <code>-h</code> option with a suitable message.</p>
 
 <p>You can get a <strong>list of available commands</strong> by using the <code>help</code> command.
 Naturally, a remote user will see a much smaller list than the server user.</p>

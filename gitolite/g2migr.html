@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -35,13 +60,20 @@ g2 and want to move to g3.</strong> </font></p>
 <ul>
 <li>incompatible features
 <ul>
-<li>high impact</li>
-<li>medium impact</li>
-<li>low impact</li>
-</ul></li>
-<li><a href="g2migr.html#cg2c">using the "check-g2-compat" program</a></li>
-<li><a href="g2migr.html#rc-preset">presetting the rc file</a></li>
-</ul></li>
+<li>high impact
+</li>
+<li>medium impact
+</li>
+<li>low impact
+</li>
+</ul>
+</li>
+<li><a href="g2migr.html#cg2c">using the "check-g2-compat" program</a>
+</li>
+<li><a href="g2migr.html#rc-preset">presetting the rc file</a>
+</li>
+</ul>
+</li>
 </ul>
 
 <hr />
@@ -54,15 +86,15 @@ differences are in the rc file, mirroring, "NAME/" rules, and delegation.</p>
 
 <blockquote>
   <hr />
-
-<p><strong>Presetting the rc file</strong></p>
-
-<p>Some rc settings in the older gitolite are such that you cannot directly
-  run <code>gitolite setup</code> when you're ready to migrate.  <strong>Doing that will
-  clobber something important</strong>.  See <a href="g2migr.html#rc-preset">presetting the rc file</a>
-  for details.</p>
-
-<hr />
+  
+  <p><strong>Presetting the rc file</strong></p>
+  
+  <p>Some rc settings in the older gitolite are such that you cannot directly
+    run <code>gitolite setup</code> when you're ready to migrate.  <strong>Doing that will
+    clobber something important</strong>.  See <a href="g2migr.html#rc-preset">presetting the rc file</a>
+    for details.</p>
+  
+  <hr />
 </blockquote>
 
 <p>The <code>check-g2-compat</code> program attempts to identify any <em>big</em> issues you will
@@ -199,8 +231,10 @@ should be shot but no one listens to me anyway.</p></li>
 looks for settings and status that might:</p>
 
 <ul>
-<li>make g3 unusable for lots of users</li>
-<li>make g3 give <em>more</em> access than g2 under some conditions</li>
+<li>make g3 unusable for lots of users
+</li>
+<li>make g3 give <em>more</em> access than g2 under some conditions
+</li>
 </ul>
 
 <p>It does NOT look for or warn about anything else; you're expected to read (and

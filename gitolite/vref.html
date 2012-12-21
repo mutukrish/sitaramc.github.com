@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -34,30 +59,58 @@ who stop reading halfway!</p>
 <ul>
 <li><a href="vref.html">virtual refs</a>
 <ul>
-<li>rule matching recap</li>
-<li>what is a virtual ref</li>
-<li><a href="vref.html#vref-fallthru">why is fallthru considered success with VREFs</a></li>
-<li>how does it work
+<li>rule matching recap
+</li>
+<li>what is a virtual ref?
+</li>
+<li>how do I use a VREF?
+</li>
+<li>where do VREFs come from?
+</li>
+<li>ok who calls the VREF-maker?
+</li>
+<li>how does a VREF-maker work?
+</li>
+<li>mimicking a plain old update hook
+</li>
+<li>details
 <ul>
-<li>how are vrefs "created"</li>
-<li>in what order are these programs called</li>
-<li><a href="vref.html#vref-args">arguments passed to the vref code</a></li>
-<li>what (else) can the vref code pass back</li>
-</ul></li>
-<li>VREFs shipped with gitolite
+<li>what if the VREF-maker prints a different VREF?
+</li>
+<li><a href="vref.html#vref-fallthru">why is fallthru considered success with VREFs</a>
+</li>
+<li>what if the VREF-maker prints something that's not even a VREF?
+</li>
+<li>in what order are VREF-makers called?
+</li>
+<li><a href="vref.html#vref-args">what arguments are passed to the vref-maker?</a>
+</li>
+</ul>
+</li>
+<li>VREF-makers shipped with gitolite
 <ul>
-<li><a href="vref.html#NAME">restricting pushes by dir/file name</a></li>
-<li><a href="vref.html#COUNT">number of changed or new files</a></li>
-<li>advanced filetype detection</li>
-<li>checking author email</li>
-<li><a href="vref.html#votes">voting on commits</a></li>
-</ul></li>
+<li><a href="vref.html#NAME">restricting pushes by dir/file name</a>
+</li>
+<li><a href="vref.html#COUNT">number of changed or new files</a>
+</li>
+<li>advanced filetype detection
+</li>
+<li>checking author email
+</li>
+<li><a href="vref.html#votes">voting on commits</a>
+</li>
+</ul>
+</li>
 <li>other ideas -- code welcome!
 <ul>
-<li>"no non-merge first-parents"</li>
-<li>other ideas for VREFs</li>
-</ul></li>
-</ul></li>
+<li>"no non-merge first-parents"
+</li>
+<li>other ideas for VREFs
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 <hr />
@@ -84,49 +137,115 @@ nor those that have more than 3 new files.</p>
 VREFs, a <strong>fallthru results in success</strong>.  You'll see why this is more
 convenient as you read on.</p>
 
-<h2>what is a virtual ref</h2>
+<h2>what is a virtual ref?</h2>
 
-<p>Here's how to think about this whole vref thing.</p>
+<p>We know that "refs/heads/master" and such are normal git refs that are matched
+against the <a href="rules.html">rules</a> to decide if the push is to be allowed or denied.</p>
+
+<p>A VREF is just another ref that is checked against the rules.  For example,
+VREF/COUNT/5 means "this push has more than 5 changed files".  Or
+VREF/NAME/Makefile means "the file called Makefile was changed in this push".</p>
+
+<h2>how do I use a VREF?</h2>
+
+<p>Simple.  To disallow junior developers from changing more than five files, or
+from touching the Makefile, you do this:</p>
+
+<pre><code>repo foo
+    RW+                     =   @all-devs
+    -   VREF/COUNT/5        =   @junior-devs
+    -   VREF/NAME/Makefile  =   @junior-devs
+</code></pre>
+
+<h2>where do VREFs come from?</h2>
+
+<p>From a VREF-maker of course!</p>
+
+<h2>ok who calls the VREF-maker?</h2>
+
+<p>Gitolite.  It looks at each rule that contains a VREF rule (there are 2 in the
+above example) and calls VREF-makers for each of them.</p>
+
+<h2>how does a VREF-maker work?</h2>
+
+<p>We'll take the COUNT example rule above.</p>
+
+<p>When gitolite sees that rule, it calls the "COUNT" VREF-maker.  Specifically,
+the <code>VREF/COUNT</code> program (See <a href="cust.html">here</a> for actual locations on disk).</p>
+
+<p>Gitolite passes it the string "5" as an argument (actually, as the <em>eighth</em>
+argument; details later).</p>
+
+<p>The program (which can be written in any language) is expected to do one of
+two things:</p>
 
 <ul>
-<li><p>When git calls the update hook, it passes it the name of a ref, say
-refs/heads/master or refs/tags/v1.0.  Let's call this a <strong>real ref</strong>.</p>
-
-<p>This ref must pass the gauntlet of the <a href="rules.html">rules</a> as usual, and may be
-allowed or rejected, as the case may be.  If it is rejected, that's the
-end of the story.  None of the VREF code will run.</p>
-
-<p>Anyway, this "real" ref is an <em>attribute</em> of the push.  We're using this
-attribute to decide if the push should be allowed or not.</p></li>
-<li><p>Similarly, there could be other attributes that a push has.  They could be
-deduced from the pushed commits:</p>
-
-<ul>
-<li>the <em>name</em> of each file changed</li>
-<li>the <em>number</em> of new or changed files</li>
-<li>the <em>number</em> of new <em>binary</em> files</li>
+<li><p>if the condition is satisfied (i.e., there <em>are</em> more than 5 files in this
+push), it should print <code>VREF/COUNT/5</code> to STDOUT.</p></li>
+<li><p>otherwise it should print nothing.</p></li>
 </ul>
 
-<p>or come from the environment:</p>
+<p>It should exit with an exit code of zero in either case.  See next section for
+more.</p>
 
-<ul>
-<li>the time of day when the push is being made, vis-a-vis the IP address
-it is coming from or the user it is coming from</li>
-</ul>
+<h2>mimicking a plain old update hook</h2>
 
-<p>or simply come out of the blue:</p>
+<p>If it exists with a non-zero exit code, then regardless of what it prints or
+does not, the push dies.</p>
 
-<ul>
-<li>the phase of the moon!</li>
-</ul>
+<p>This is just like a plain 'update' hook.  Since the first 3 arguments (see
+later) are also the same that a plain 'update' hook receives, you can actually
+use any existing update hook as a VREF-maker.</p>
 
-<p><p>We'll call these properties <strong>virtual</strong> refs.</p></li>
-<li><p>What do they look like?  Well, you already saw a couple up top.  The NAME
-vref is more commonly used though.  So if this push changed files foo and
-bar/baz, the NAME vrefs would be <code>VREF/NAME/foo</code> and <code>VREF/NAME/bar/baz</code>.</p></li>
-</ul></p>
+<p>To repurpose an existing update hook as a VREF-maker, just copy it to the VREF
+directory (again, see <a href="cust.html">here</a> for actual locations on disk).  Then add
+this rule to your repos:</p>
 
-<h2><a name="vref-fallthru"></a> why is fallthru considered success with VREFs</h2>
+<pre><code>repo foo    # or maybe even 'repo @all'
+    -   VREF/my-update-hook     =   @all
+</code></pre>
+
+<p>That's it.</p>
+
+<h2>details</h2>
+
+<h3>what if the VREF-maker prints a different VREF?</h3>
+
+<p>Unless you know what you're upto, don't do that.</p>
+
+<p>But it's allowed and the behaviour is defined.  The VREF-maker for the NAME
+VREF is a good example.  It ignores the arguments and just makes VREFs out of
+the name of every file that was changed in the push.</p>
+
+<p>Here's another example.  Consider the problem of not allowing pushes at
+specific times.  Let's say repo 'foo' cannot be pushed between 4 and 7pm, and
+repo 'bar' can only be pushed before 9am.  And of course all this only applies
+to the junior developers, the poor guys!</p>
+
+<pre><code>repo foo
+    RW+                         =   @all
+    -   VREF/Hour/16            =   @junior-devs
+    -   VREF/Hour/17            =   @junior-devs
+    -   VREF/Hour/18            =   @junior-devs
+
+repo bar
+    RW+                         =   @all
+    -   VREF/Hour/09            =   @junior-devs
+    -   VREF/Hour/1[0-9]        =   @junior-devs
+    -   VREF/Hour/2[0-9]        =   @junior-devs
+</code></pre>
+
+<p>In this example, we write the "Hour" VREF-maker to <em>ignore the argument
+passed</em> and just print <code>VREF/Hour/NN</code> where NN can be between 00 to 23
+inclusive and of course represents the current hour.</p>
+
+<p>if foo is pushed at 6:30pm, the VREF-maker prints VREF/Hour/18, which
+satisfies the third rule and is rejected.</p>
+
+<p>If bar is pushed at, say, 7:20am, the vref printed is VREF/Hour/07, which does
+not match any of the rules.  And fallthru is success so it passes.</p>
+
+<h3><a name="vref-fallthru"></a> why is fallthru considered success with VREFs</h3>
 
 <p>Virtual refs are <strong>best used</strong> (1) as additional "deny" rules, performing
 extra checks that core gitolite cannot.  You usually want such extra checks
@@ -156,89 +275,35 @@ list:</p>
 
 <p></font></p>
 
-<h2>how does it work</h2>
+<h3>what if the VREF-maker prints something that's not even a VREF?</h3>
 
-<ul>
-<li><p>something creates a bunch of virtual refs</p></li>
-<li><p>each generated vref goes through the gauntlet of the <a href="rules.html">rules</a>, just like
-the real ref does, with the same logic except for the fact that fallthru
-is success here.</p>
-
-<p>This happens after the "real" ref (i.e., refs/heads/master or whatever)
-has already passed all the access rules that apply to it.  If the real ref
-gets rejected, VREF processing doesn't even happen.</p></li>
-</ul>
-
-<h3>how are vrefs "created"</h3>
-
-<p>As we know, the one and only real ref is sent in by git, so where do the
-virtual ones come from?</p>
-
-<p>Well, here's where you need to pay attention.  The same rule that the vref
-needs to be checked against, like:</p>
-
-<pre><code>-   VREF/COUNT/9            =   dev2 dev3
-</code></pre>
-
-<p>or</p>
-
-<pre><code>-   VREF/NAME/Makefile       =   @junior-devs
-</code></pre>
-
-<p>also <em>creates</em> them!  Yes.  Mind blowingly simple.  <code>\o/</code></p>
-
-<p>Here's how:</p>
-
-<ul>
-<li><p>For every refex starting with <code>VREF/FOO/</code> in a rule that applies to this
-user, a call to a program called FOO is triggered.  (See <a href="cust.html">here</a> for
-actual locations on disk).  Note that the program isn't even called if the
-VREF rule doesn't apply to that user.</p></li>
-<li><p>This call has several arguments.  For example, a line like:</p>
-
-<pre><code>   -   VREF/COUNT/3/NEWFILES    =   user
-</code></pre>
-
-<p>sends <strong>nine arguments</strong>; see later for details.</p></li>
-<li><p>The script can print anything it wants to STDOUT.  Lines not starting with
-<code>VREF/</code> are printed as is (so your VREF can do mostly-normal printing to
-STDOUT).</p>
+<p>The VREF-maker can print anything it wants to STDOUT.  Lines not starting with
+<code>VREF/</code> are printed as is (so your VREF-maker can do mostly-normal printing to
+STDOUT).  This is especially useful if you've turned an existing update hook
+into a VREF-maker, and it prints stuff but you don't want to touch the code.</p>
 
 <p>For lines starting with <code>VREF/</code>, the first word in each such line will be
-treated as a virtual ref, while the rest, if any, is a message to be added
-to the standard "...DENIED..." message that gitolite will print if that
-refex matches and the rule is a deny rule.</p>
+treated as a virtual ref, while the rest, if any, is a message to be added to
+the standard "...DENIED..." message that gitolite will print if that refex
+matches and the rule is a deny rule.</p>
 
-<p>Usually it only makes sense to either</p>
+<h3>in what order are VREF-makers called?</h3>
 
-<ul>
-<li><p>Print nothing that starts with <code>VREF/</code> -- if you don't want the rule
-that triggered it to match (ie., whatever condition being tested was
-not violated; like if the count of changed files did not exceed 9, in
-our earlier example).</p></li>
-<li><p>Print the refex itself (plus an optional message), so that it matches
-the line which invoked it.</p></li>
-</ul></li>
-</ul>
+<p>VREF-makers are called in the sequence in which they appear in the conf file.</p>
 
-<h3>in what order are these programs called</h3>
+<p>There are some optimisations to prevent calling the same VREF-maker with the
+same arguments more than once, and the VREF-maker code for the NAME VREF
+(which is special) is called only once regardless of how many times it appears
+but these details should not concern anyone but a developer.</p>
 
-<p>Vref generating programs (as they properly should be called) are called in the
-sequence in which they appear in the conf file.</p>
-
-<p>There are some optimisations to prevent calling the same VREF with the same
-arguments more than once, and the NAME generating code is called only once
-regardless of how many times it appears but these details should not concern
-anyone but a developer.</p>
-
-<h3><a name="vref-args"></a> arguments passed to the vref code</h3>
+<h3><a name="vref-args"></a> what arguments are passed to the vref-maker?</h3>
 
 <ul>
 <li><p>Arguments <strong>1, 2, 3</strong>: the 'ref', 'oldsha', and 'newsha' that git passed
 to the update hook (see 'man githooks').</p>
 
 <p>This, combined with the fact that non-zero exits are detected, mean that
-you can simply use an existing update.secondary as a new VREF as-is, no
+you can simply use an existing update.secondary as a VREF-maker as-is, no
 changes needed.</p></li>
 <li><p>Arguments <strong>4 and 5</strong>: the 'oldtree' and 'newtree' SHAs.  These are the
 same as the oldsha and newsha values, except if one of them is all-0.
@@ -260,34 +325,9 @@ followed by <code>NEWFILES</code>.</p></li>
 </ul>
 
 <p>Yes, argument 7 is redundant if you have 8 and 9.  It's meant to make it easy
-to write vref scripts in any language.  See script examples in source.</p>
+to write vref-maker scripts in any language.  See script examples in source.</p>
 
-<h3>what (else) can the vref code pass back</h3>
-
-<p>Actually, the vref code can pass anything back; each line in its output that
-starts with <code>VREF/</code> will be matched against all the rules as usual (with the
-exception that fallthru is not failure).</p>
-
-<p>For example, you could have a ruleset like this:</p>
-
-<pre><code>repo r1
-    # ... normal rules ...
-
-    -   VREF/TIME/WEEKEND       =   @interns
-    -   VREF/TIME/WEEKNIGHT     =   @interns
-    -   VREF/TIME/HOLIDAY       =   @interns
-</code></pre>
-
-<p>and you could write the TIME vref code to passback any or all
-of the times that match.  Then if an intern tried to access the system, each
-rule would trigger a call to gl-bindir/VREF/TIME.</p>
-
-<p>The script should send back any of the applicable times (even more than one,
-or none at all, as the case may be).  So even if it was invoked using the
-first rule, it might pass back (to gitolite) a virtual ref saying
-'VREF/TIME/HOLIDAY', which would promptly cause the request to be denied.</p>
-
-<h2>VREFs shipped with gitolite</h2>
+<h2>VREF-makers shipped with gitolite</h2>
 
 <h3><a name="NAME"></a> restricting pushes by dir/file name</h3>
 
@@ -412,14 +452,20 @@ quite different.</p>
 <p>Here are some more ideas:</p>
 
 <ul>
-<li>Number of commits (<code>git rev-list --count $old $new</code>).</li>
+<li>Number of commits (<code>git rev-list --count $old $new</code>).
+</li>
 <li>Number of binary files in commit (currently I only know to count
-occurrences of <code>Bin</code> in the output of <code>git diff --stat</code>.</li>
+occurrences of <code>Bin</code> in the output of <code>git diff --stat</code>.
+</li>
 <li>Number of <em>new</em> binary files (count <code>Bin 0 -&gt;</code> in <code>git diff --stat</code>
-output).</li>
-<li>Time of day/day of week (see example snippet somewhere above).</li>
-<li>IP address.</li>
-<li>Phase of the moon.</li>
+output).
+</li>
+<li>Time of day/day of week (see example snippet somewhere above).
+</li>
+<li>IP address.
+</li>
+<li>Phase of the moon.
+</li>
 </ul>
 
 <p>Note that pretty much anything that involves <code>$oldsha..$newsha</code> will have to

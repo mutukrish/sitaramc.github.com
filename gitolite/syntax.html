@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -34,12 +59,16 @@ semicolons, etc., in the syntax.</p>
 with an alphanumeric, but after that they can also contain <code>.</code>, <code>_</code>, or <code>-</code>.</p>
 
 <p>Usernames can optionally be followed by an <code>@</code> and a domainname containing at
-least one <code>.</code> (this allows you to use an email address as someone's username).
-Reponames can contain <code>/</code> characters (this allows you to put your repos in a
-tree-structure for convenience)</p>
+least one <code>.</code> (this allows you to use an email address as someone's username).</p>
+
+<p><strong>Group names</strong> are like simple usernames (i.e., not email addresses) but
+start with an <code>@</code> sign.</p>
+
+<p>Reponames can contain <code>/</code> characters (this allows you to put your repos in a
+tree-structure for convenience).</p>
 
 <p>There are no continuation lines by default.  You do not need them; the section
-on "groups" will tell you how you can break up large lists of names in a group
+on <a href="groups.html">groups</a> will tell you how you can break up large lists of names in a group
 definition into multiple lines.</p>
 
 <p><font color="gray">If you <em>must</em> have them, you can optionally enable them;

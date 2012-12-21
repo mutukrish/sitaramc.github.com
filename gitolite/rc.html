@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -27,7 +52,7 @@
 
 <p><strong>NOTE</strong>: if you're migrating from g2, there are some settings that MUST be
 dealt with <strong>before</strong> running <code>gitolite setup</code>; please read the
-<a href="install.html#migr">migration</a> page and linked pages, and especially the one on "presetting
+<a href="migr.html">migration</a> page and linked pages, and especially the one on "presetting
 the rc file"</p>
 
 <hr />
@@ -46,9 +71,12 @@ sure the brackets and braces stay matched up!</p>
 gitolite.  As you can see there are 3 types of variables in it:</p>
 
 <ul>
-<li>simple variables (like <code>UMASK</code>)</li>
-<li>lists (like <code>POST_COMPILE</code>, <code>POST_CREATE</code>)</li>
-<li>hashes (like <code>ROLES</code>, <code>COMMANDS</code>)</li>
+<li>simple variables (like <code>UMASK</code>)
+</li>
+<li>lists (like <code>POST_COMPILE</code>, <code>POST_CREATE</code>)
+</li>
+<li>hashes (like <code>ROLES</code>, <code>COMMANDS</code>)
+</li>
 </ul>
 
 <p>While some of the variables are documented in this file, many of them are not.
@@ -107,6 +135,10 @@ end).</p>
 <p>The third choice (which you may have guessed already if you're familiar
 with regular expressions) is to allow anything and everything:
 <code>$GIT_CONFIG_KEYS = '.*';</code></p></li>
+<li><p><code>ROLES</code>, hash, default keys 'READERS' and 'WRITERS'</p>
+
+<p>This specifies the role names allowed to be used by users running the
+<a href="user.html#perms">perms</a> command.  The <a href="wild.html">wild</a> repos doc has more info on roles.</p></li>
 <li><p><code>DEFAULT_ROLE_PERMS</code>, string, default undef</p>
 
 <p>This sets default wildcard permissions for newly created wildcard repos.</p>

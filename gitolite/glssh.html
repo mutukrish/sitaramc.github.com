@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -28,13 +53,18 @@
 <ul>
 <li><a href="glssh.html">how gitolite uses ssh</a>
 <ul>
-<li>ssh basics</li>
+<li>ssh basics
+</li>
 <li>how does gitolite use all this ssh magic?
 <ul>
-<li>restricting shell access/distinguishing one user from another</li>
-<li>restricting branch level actions</li>
-</ul></li>
-</ul></li>
+<li>restricting shell access/distinguishing one user from another
+</li>
+<li>restricting branch level actions
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 <hr />
@@ -80,7 +110,8 @@ key.  This public key is usually just one long line of text.</p>
 <li>On Windows machines with msysgit installed, you should do this from
 within a "git bash" window.  The command will report the full path where
 the files have been written; make a note of this, and use those files in
-any of the description that follows.</li>
+any of the description that follows.
+</li>
 </ul></li>
 <li><p><strong>Adding your public key to the server</strong>'s <code>~/.ssh/authorized_keys</code>
 file is how ssh uses pubkeys to authenticate users.  Let's say
@@ -106,7 +137,8 @@ the server!</p>
 <li><strong>Troubleshooting pubkey authentication failures</strong>: if you are unable to
 get ssh access to the server after doing all this, you'll have to look
 in <code>/var/log/secure</code> or <code>/var/log/auth.log</code> or some such file on the
-server to see what specific error <code>sshd</code> is complaining about.</li>
+server to see what specific error <code>sshd</code> is complaining about.
+</li>
 </ul></li>
 <li><p><strong>Restricting users to specific commands</strong> is very important for gitolite.
 If you read <code>man sshd</code> and look for <code>authorized_keys file format</code>, you'll
@@ -133,8 +165,10 @@ understand this</strong>.</p></li>
 
 <ul>
 <li>How does it distinguish between me and someone else, since we're all
-logging in as the same remote user "git".</li>
-<li>How does it restrict what I can do within a repository.</li>
+logging in as the same remote user "git".
+</li>
+<li>How does it restrict what I can do within a repository.
+</li>
 </ul>
 
 <h3>restricting shell access/distinguishing one user from another</h3>

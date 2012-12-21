@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -102,7 +127,7 @@ character for an <em>ordinary</em> repo.  Therefore, a pattern like <code>foo/.+
 look like a regex to gitolite.  Use <code>foo/..*</code> if you want that.</p>
 
 <p>Also, <code>..*</code> by itself is not considered a valid repo pattern.  Try
-<code>[a-zA-Z0-9].*</code>.</p>
+<code>[a-zA-Z0-9].*</code>.  <code>CREATOR/..*</code> will also work.</p>
 
 <h3>line-anchored regexes</h3>
 
@@ -122,18 +147,18 @@ metacharacters.</p>
 
 <blockquote>
   <hr />
-
-<p><em>Side-note: contrast with refexes</em></p>
-
-<p>Just for interest, note that this is in contrast to the refexes for the
-  normal "branch" permissions, as described in <code>doc/gitolite.conf.mkd</code> and
-  elsewhere.  These "refexes" are only anchored at the start; a pattern like
-  <code>refs/heads/master</code> actually can match <code>refs/heads/master01/bar</code> as well,
-  even if no one will actually push such a branch!  You can anchor both
-  sides if you really care, by using <code>master$</code> instead of <code>master</code>, but that
-  is <em>not</em> the default for refexes.</p>
-
-<hr />
+  
+  <p><em>Side-note: contrast with refexes</em></p>
+  
+  <p>Just for interest, note that this is in contrast to the refexes for the
+    normal "branch" permissions, as described in <code>doc/gitolite.conf.mkd</code> and
+    elsewhere.  These "refexes" are only anchored at the start; a pattern like
+    <code>refs/heads/master</code> actually can match <code>refs/heads/master01/bar</code> as well,
+    even if no one will actually push such a branch!  You can anchor both
+    sides if you really care, by using <code>master$</code> instead of <code>master</code>, but that
+    is <em>not</em> the default for refexes.</p>
+  
+  <hr />
 </blockquote>
 
 <h2>roles</h2>
@@ -161,9 +186,9 @@ more detail.</p>
   RW+D              =   MANAGERS
 </code></pre>
 
-<p>You can add the new names to the ROLES hash in the <a href="rc.html">rc</a> file.  Be sure to
-run the 2 commands mentioned there after you have added the roles.
-file.  The rc file documentation (<code>doc/gitolite.rc.mkd</code>) explains how.</p>
+<p>You can add the new names to the ROLES hash in the <code>~/.gitolite.rc</code> file; see
+comments in that file for how to do that.  Be sure to run the 2 commands
+mentioned there after you have added the roles.</p>
 
 <h4><a name="rolenamewarn"></a> <strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></h4>
 

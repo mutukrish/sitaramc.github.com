@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -49,11 +74,16 @@ containing source code.</p>
 <ul>
 <li><a href="locking.html">locking binary files</a>
 <ul>
-<li>problem description</li>
-<li>admin/setup</li>
-<li>user view</li>
-<li>detailed example</li>
-</ul></li>
+<li>problem description
+</li>
+<li>admin/setup
+</li>
+<li>user view
+</li>
+<li>detailed example
+</li>
+</ul>
+</li>
 </ul>
 
 <h2>problem description</h2>
@@ -84,21 +114,27 @@ view of this feature and adjust permissions accordingly.</p>
 <ul>
 <li>Any user with "W" permissions to any branch in the repo can "lock" any
 file.  Once locked, no other user can push changes to that file, <em>in any
-branch</em>, until it is unlocked.</li>
+branch</em>, until it is unlocked.
+</li>
 <li>Any user with "+" permissions to any branch in the repo can "break" a lock
-held by someone else if needed.</li>
+held by someone else if needed.
+</li>
 </ul>
 
 <p>For best results, everyone on the team should:</p>
 
 <ul>
 <li>Switch to the branch containing the binary files when wanting to make a
-change.</li>
-<li>Run 'git pull' or eqvt, then lock the binary file(s) before editing them.</li>
+change.
+</li>
+<li>Run 'git pull' or eqvt, then lock the binary file(s) before editing them.
+</li>
 <li>Finish the editing task as quickly as possible, then commit, push, and
-unlock the file(s) so others are not needlessly blocked.</li>
+unlock the file(s) so others are not needlessly blocked.
+</li>
 <li>Understand that breaking a lock require additional, (out of band)
-communication.  It is upto the team's policies what that entails.</li>
+communication.  It is upto the team's policies what that entails.
+</li>
 </ul>
 
 <h2>detailed example</h2>

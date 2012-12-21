@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -30,22 +55,34 @@
 <ul>
 <li><a href="g2migr-example.html">migration example</a>
 <ul>
-<li>existing setup</li>
+<li>existing setup
+</li>
 <li>preparing for the migration
 <ul>
-<li>getting g3</li>
-<li>run check-g2-compat</li>
-</ul></li>
+<li>getting g3
+</li>
+<li>run check-g2-compat
+</li>
+</ul>
+</li>
 <li>the actual migration
 <ul>
-<li>step 1</li>
-<li>step 2</li>
-<li>step 3</li>
-<li>step 4</li>
-<li>step 5</li>
-</ul></li>
-<li>checking things out</li>
-</ul></li>
+<li>step 1
+</li>
+<li>step 2
+</li>
+<li>step 3
+</li>
+<li>step 4
+</li>
+<li>step 5
+</li>
+</ul>
+</li>
+<li>checking things out
+</li>
+</ul>
+</li>
 </ul>
 
 <h2>existing setup</h2>
@@ -243,7 +280,7 @@ To /home/git/repositories/gitolite-admin.git
  + 7eb8163...1474770 master -&gt; master (forced update)
 </code></pre>
 
-<p>Aaha!  I forgot to set <code>CONFIG_KEYS</code> (new name for <code>GL_GITCONFIG_KEYS</code>) in
+<p>Aaha!  I forgot to set <code>GIT_CONFIG_KEYS</code> (new name for <code>GL_GITCONFIG_KEYS</code>) in
 the new rc file so fix that:</p>
 
 <pre><code>$ vim ~/.gitolite.rc

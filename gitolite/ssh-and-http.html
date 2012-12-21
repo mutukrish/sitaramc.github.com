@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -31,13 +56,19 @@ unported 3.0, http://creativecommons.org/licenses/by-nc-sa/3.0/</p>
 <p>Assumptions:</p>
 
 <ul>
-<li>Apache 2.x with CGI and Suexec support installed.</li>
+<li>Apache 2.x with CGI and Suexec support installed.
+</li>
 <li>Git and Gitolite installed with user "git" and group "git", and pubkey SSH
-access configured and working.</li>
-<li>Git plumbing installed to /usr/libexec/git-core</li>
-<li>Gitolite base located at /opt/git</li>
-<li>Apache <code>DOCUMENT_ROOT</code> set to /var/www</li>
-<li>Apache runs with user www and group www</li>
+access configured and working.
+</li>
+<li>Git plumbing installed to /usr/libexec/git-core
+</li>
+<li>Gitolite base located at /opt/git
+</li>
+<li>Apache <code>DOCUMENT_ROOT</code> set to /var/www
+</li>
+<li>Apache runs with user www and group www
+</li>
 </ul>
 
 <p>Please adjust the instructions below to reflect your setup (users and paths).</p>

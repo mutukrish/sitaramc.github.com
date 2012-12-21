@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -27,21 +52,21 @@
 
 <blockquote>
   <hr />
-
-<p><strong>Note</strong>: The old gitolite (v1.x, v2.x) used to tie itself into knots
-  dealing with gitweb and daemon.  One of the goals of g3 was to get out of
-  that game, which your author does not play anyway.  This means statements
-  like "...special user called 'gitweb'..." really apply to the <a href="non-core.html">non-core</a>
-  programs that gitolite ships with, not to "core" gitolite, and any or all
-  of this functionality can be disabled by commenting out certain lines in
-  the <a href="rc.html">rc</a> file.</p>
-
-<hr />
-
-<p>Also, <strong>note</strong> that gitolite does <strong>not</strong> install or configure
-  gitweb/git-daemon -- that is a one-time setup you must do separately.</p>
-
-<hr />
+  
+  <p><strong>Note</strong>: The old gitolite (v1.x, v2.x) used to tie itself into knots
+    dealing with gitweb and daemon.  One of the goals of g3 was to get out of
+    that game, which your author does not play anyway.  This means statements
+    like "...special user called 'gitweb'..." really apply to the <a href="non-core.html">non-core</a>
+    programs that gitolite ships with, not to "core" gitolite, and any or all
+    of this functionality can be disabled by commenting out certain lines in
+    the <a href="rc.html">rc</a> file.</p>
+  
+  <hr />
+  
+  <p>Also, <strong>note</strong> that gitolite does <strong>not</strong> install or configure
+    gitweb/git-daemon -- that is a one-time setup you must do separately.</p>
+  
+  <hr />
 </blockquote>
 
 <h2>gitweb</h2>
@@ -49,7 +74,8 @@
 <p>The following repos are deemed to be readable by gitweb:</p>
 
 <ul>
-<li>any repos readable by the special user <code>gitweb</code></li>
+<li>any repos readable by the special user <code>gitweb</code>
+</li>
 <li><p>any repos containing one or more of the following types of lines:
 (actually, any config variable starting with <code>gitweb.</code>).</p>
 
@@ -81,6 +107,22 @@ that gitolite sets make them unreadable.</p>
 
 <p>See the section on the <code>UMASK</code> variable in the documentation for the <a href="rc.html">rc
 file</a>.</p>
+
+<h3>repo-specific authorisation in gitweb</h3>
+
+<p>Gitweb has a feature whereby it will call a (perl) function that you supply,
+passing it the full path to the repo being accessed.  If the remote user is
+authenticated, the username will be available, so your function can take those
+two pieces of information and return true or false to allow or deny the
+repository access.</p>
+
+<p>If you want to use gitolite's access rules in making this determination, you
+will first have to ensure that the HTTP username (i.e., the username known to
+apache/gitweb) is the same as the gitolite username.  If you're using
+gitolite's <a href="http.html">http</a> mode, this is probably already true, but if you're using
+the more widely used ssh mode, you'll have to make sure they match.</p>
+
+<p>You then need to add <a href="gitweb.conf.html">this code</a> to your gitweb.conf.</p>
 
 <h2>git-daemon</h2>
 

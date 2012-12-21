@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -28,16 +53,24 @@
 <ul>
 <li><a href="why.html">why might you need gitolite</a>
 <ul>
-<li>basic use case</li>
+<li>basic use case
+</li>
 <li><a href="why.html#alt">alternatives</a>
 <ul>
-<li>unix permissions and ACLs</li>
-<li><a href="why.html#gcr">Gerrit Code Review</a></li>
-<li>gitorious</li>
-<li>gitlab</li>
-<li>others</li>
-</ul></li>
-</ul></li>
+<li>unix permissions and ACLs
+</li>
+<li><a href="why.html#gcr">Gerrit Code Review</a>
+</li>
+<li>gitorious
+</li>
+<li>gitlab
+</li>
+<li>others
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 <hr />
@@ -94,13 +127,17 @@ and facls.  But you can't do example 2 -- git is not designed to allow that!</p>
 <p>Here are some other disadvantages of the Unix ACL method:</p>
 
 <ul>
-<li>Every user needs a userid and password on the server.</li>
+<li>Every user needs a userid and password on the server.
+</li>
 <li>Changing access rights involves complex <code>usermod -G ...</code> mumblings
-(I.e., the "pain" mentioned above is not a one-time pain!)</li>
+(I.e., the "pain" mentioned above is not a one-time pain!)
+</li>
 <li><em>Viewing</em> the current set of permissions requires running multiple
 commands to list directories and their permissions/ownerships, users and
-their group memberships, and then correlating all these manually.</li>
-<li>Auditing historical permissions or permission changes is impossible.</li>
+their group memberships, and then correlating all these manually.
+</li>
+<li>Auditing historical permissions or permission changes is impossible.
+</li>
 </ul>
 
 <h3><a name="gcr"></a> Gerrit Code Review</h3>

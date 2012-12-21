@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -40,30 +65,50 @@ tricks that gitolite can do.</p>
 <ul>
 <li>IMPORTANT -- READ THIS FIRST
 <ul>
-<li>caveats</li>
-<li>naming conventions used</li>
-<li>taking stock -- relevant files and directories</li>
-<li>normal gitolite key handling</li>
-</ul></li>
-<li>common ssh problems</li>
-<li>step by step</li>
+<li>caveats
+</li>
+<li>naming conventions used
+</li>
+<li>taking stock -- relevant files and directories
+</li>
+<li>normal gitolite key handling
+</li>
+</ul>
+</li>
+<li>common ssh problems
+</li>
+<li>step by step
+</li>
 <li>random tips, tricks, and notes
 <ul>
-<li><a href="sts.html#giving-shell">giving shell access to gitolite users</a></li>
-<li><a href="sts.html#kfn">distinguishing one key from another</a></li>
-<li>simulating ssh-copy-id</li>
-<li>problems with using non-openssh public keys</li>
-<li>windows issues</li>
-</ul></li>
-<li><a href="sts.html#stsapp1">appendix 1: ssh daemon asks for a password</a></li>
+<li><a href="sts.html#giving-shell">giving shell access to gitolite users</a>
+</li>
+<li><a href="sts.html#kfn">distinguishing one key from another</a>
+</li>
+<li>simulating ssh-copy-id
+</li>
+<li>problems with using non-openssh public keys
+</li>
+<li>windows issues
+</li>
+</ul>
+</li>
+<li><a href="sts.html#stsapp1">appendix 1: ssh daemon asks for a password</a>
+</li>
 <li><a href="sts.html#sshkeys-lint">appendix 2: which key is which -- running sshkeys-lint</a>
 <ul>
-<li>typical cause(s)</li>
-</ul></li>
-<li><a href="sts.html#stsapp3">appendix 3: ssh client may not be offering the right key</a></li>
-<li><a href="sts.html#ssh-ha">appendix 4: ssh host aliases</a></li>
-<li><a href="sts.html#ybpfail">appendix 5: why bypassing gitolite causes a problem</a></li>
-</ul></li>
+<li>typical cause(s)
+</li>
+</ul>
+</li>
+<li><a href="sts.html#stsapp3">appendix 3: ssh client may not be offering the right key</a>
+</li>
+<li><a href="sts.html#ssh-ha">appendix 4: ssh host aliases</a>
+</li>
+<li><a href="sts.html#ybpfail">appendix 5: why bypassing gitolite causes a problem</a>
+</li>
+</ul>
+</li>
 </ul>
 
 <hr />
@@ -158,7 +203,8 @@ with the other appendices in sequence.</p>
 <ul>
 <li>Running any git clone/fetch/ls-remote or just <code>ssh git@server info</code> asks
 you for a password.  (Or, if your sshd is set to use keys only, it just
-disconnects without doing anything).</li>
+disconnects without doing anything).
+</li>
 </ul>
 
 <p>The following problem(s) indicate that your pubkey is bypassing gitolite and
@@ -322,9 +368,9 @@ putty/plink, including environment variables, etc., and then try again.</p>
 
 <blockquote>
   <p><strong>NOTE</strong>: This section should be useful to anyone trying to get
-  password-less access working.  It is not necessarily specific to gitolite,
-  so keep that in mind if the wording feels a little more general than you
-  were expecting.</p>
+    password-less access working.  It is not necessarily specific to gitolite,
+    so keep that in mind if the wording feels a little more general than you
+    were expecting.</p>
 </blockquote>
 
 <p>You have generated a keypair on your workstation (<code>ssh-keygen</code>) and copied the
@@ -340,7 +386,7 @@ try, you are being asked for a password.</p>
 <p>This is a quick checklist:</p>
 
 <ul>
-<li><p>Make sure you're being asked for a password and not a pass<em>phrase</em>.  Do
+<li><p>Make sure you're being asked for a password and not a pass*phrase*.  Do
 not confuse or mistake a prompt saying <code>Enter passphrase for key
 '/home/sitaram/.ssh/id_rsa':</code> for a password prompt from the remote
 server!</p>

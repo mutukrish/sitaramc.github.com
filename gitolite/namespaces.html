@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -50,8 +75,10 @@ on the server side.  (But see the "WARNINGS" section).</p>
 use it.  Depending on context, we use one of the following names:</p>
 
 <ul>
-<li>storage context: backing repo/real repo, and logical repos</li>
-<li><a href="http://git-scm.com/book/en/Distributed-Git-Distributed-Workflows#Integration-Manager-Workflow">workflow</a> context: blessed repo and developer repos</li>
+<li>storage context: backing repo/real repo, and logical repos
+</li>
+<li><a href="http://git-scm.com/book/en/Distributed-Git-Distributed-Workflows#Integration-Manager-Workflow">workflow</a> context: blessed repo and developer repos
+</li>
 </ul>
 
 <p><font color="gray">In addition, in the gitolite context you could say that the
@@ -117,8 +144,10 @@ the "WARNINGS" section below for more.</p>
 namespace pattern for that repo is applied to the repo name as follows:</p>
 
 <ul>
-<li>a percent sign matches a single component in the repo name</li>
-<li>an asterisk matches one or more components</li>
+<li>a percent sign matches a single component in the repo name
+</li>
+<li>an asterisk matches one or more components
+</li>
 </ul>
 
 <p>Once the matching is done, each "at-digit" combination is replaced by the
@@ -163,6 +192,7 @@ processing (i.e., it's just a normal repo)</p>
 <pre><code># backing repos
 repo sitaramc/gitolite linux git
     ...access rules for backing repos...
+
 
 repo CREATOR/..*
     C   =   @team
@@ -246,20 +276,28 @@ the client point of view, <strong>the only features guaranteed to work on logica
 repos are</strong>:</p>
 
 <ul>
-<li>normal git operations (clone, fetch, push)</li>
-<li>creating a new <a href="wild.html">wild</a> repo</li>
-<li>the <a href="user.html#perms">perms</a> command (except the "-c" flag)</li>
+<li>normal git operations (clone, fetch, push)
+</li>
+<li>creating a new <a href="wild.html">wild</a> repo
+</li>
+<li>the <a href="user.html#perms">perms</a> command (except the "-c" flag)
+</li>
 </ul>
 
 <p>From a server/admin point of view, <strong>the following will not work for logical
 repos, and may even fail silently!</strong>:</p>
 
 <ul>
-<li>smart-http mode</li>
-<li>the 'config' line in gitolite.conf</li>
-<li>any 'option's affecting a physical repo, like RepoUmask</li>
-<li>anything that expects to be recorded somewhere in the bare repo directory.</li>
-<li>...and anything else not explicitly listed as "working" in this doc ;-)</li>
+<li>smart-http mode
+</li>
+<li>the 'config' line in gitolite.conf
+</li>
+<li>any 'option's affecting a physical repo, like RepoUmask
+</li>
+<li>anything that expects to be recorded somewhere in the bare repo directory.
+</li>
+<li>...and anything else not explicitly listed as "working" in this doc ;-)
+</li>
 </ul>
 
 <h3>gitolite functionality -- mirroring</h3>

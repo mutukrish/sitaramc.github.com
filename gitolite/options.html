@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -30,7 +55,8 @@ setting "options".</p>
 
 <p>A line like 'option foo = 1' is really just syntactic sugar for 'config
 gitolite-options.foo = 1', so everything in the <a href="git-config.html">git-config</a> page also
-applies here.</p>
+applies here (especially the bit about <a href="git-config.html#override_conf">overriding config
+values</a>).</p>
 
 <p>Options are set by repo.  The syntax is very simple:</p>
 
@@ -41,7 +67,7 @@ applies here.</p>
 command, is not querying for the option key 'foo.bar'!</p>
 
 <p>Options are therefore documented in the section/page they belong in, not here.
-Here are the currently recognised options:</p>
+Here are some examples, although this list is not exhaustive:</p>
 
 <ul>
 <li><p><a href="rules.html#deny-rules">deny-rules</a> -- ask gitolite to honor deny rules during the pre-git

@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -48,7 +73,7 @@ $ ls -aF gitolite
 </code></pre>
 
 <p>If we were an existing user, we'd run the migration checker 'check-g2-compat'
-(start <a href="install.html#migr">here</a> for all migration info).  For now we're only interested in
+(start <a href="migr.html">here</a> for all migration info).  For now we're only interested in
 "gitolite/src", so:</p>
 
 <pre><code>$ ls -aF gitolite/src
@@ -105,16 +130,22 @@ $ ls -aF .ssh
 
 <ul>
 <li><code>~/bin/gitolite</code> -- a symlink to <code>~/gitolite/src/gitolite</code>.  The target of
-this symlink tells gitolite where the rest of the code is.</li>
-<li><code>~/gitolite/src</code> -- the rest of the code.</li>
+this symlink tells gitolite where the rest of the code is.
+</li>
+<li><code>~/gitolite/src</code> -- the rest of the code.
+</li>
 <li><code>~/.gitolite</code> -- the gitolite "admin" directory.  The only thing you
 should directly touch here are the [log][] files and <a href="cust.html#hooks">hooks</a>.  (I.e., do
 NOT change the conf or keydir contents here; see adding <a href="users.html">users</a> and
-<a href="repos.html">repos</a> for how to do that.</li>
-<li><code>~/.gitolite.rc</code> -- the <a href="rc.html">rc</a> file.</li>
+<a href="repos.html">repos</a> for how to do that.
+</li>
+<li><code>~/.gitolite.rc</code> -- the <a href="rc.html">rc</a> file.
+</li>
 <li><code>~/repositories</code> -- which contains all the repositories that gitolite will
-be managing.</li>
+be managing.
+</li>
 <li><code>~/.ssh</code> -- which contains (at least) the <code>authorized_keys</code> file that
 provides access to users.  You can look inside that file and correlate it
-with what the <a href="ssh.html">ssh</a> docs tell you, if you wish.</li>
+with what the <a href="ssh.html">ssh</a> docs tell you, if you wish.
+</li>
 </ul>

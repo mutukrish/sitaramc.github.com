@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -28,13 +53,20 @@
 <ul>
 <li><a href="triggers.html">gitolite triggers</a>
 <ul>
-<li>intro and sample rc excerpt</li>
-<li>types of trigger programs</li>
-<li>manually firing triggers</li>
-<li>common arguments</li>
-<li>trigger-specific arguments and other details</li>
-<li>tips</li>
-</ul></li>
+<li>intro and sample rc excerpt
+</li>
+<li>types of trigger programs
+</li>
+<li>manually firing triggers
+</li>
+<li>common arguments
+</li>
+<li>trigger-specific arguments and other details
+</li>
+<li>tips
+</li>
+</ul>
+</li>
 </ul>
 
 <h2>intro and sample rc excerpt</h2>
@@ -88,9 +120,12 @@ gitolite-shell program that invokes them.</p>
 paying attention to:</p>
 
 <ul>
-<li>the path names in various trigger lists in the rc file</li>
-<li>corresponding path names in the src/ directory in gitolite source</li>
-<li>and for perl modules, the package names and function names within.</li>
+<li>the path names in various trigger lists in the rc file
+</li>
+<li>corresponding path names in the src/ directory in gitolite source
+</li>
+<li>and for perl modules, the package names and function names within.
+</li>
 </ul>
 
 <h2>manually firing triggers</h2>
@@ -134,11 +169,16 @@ samples or ask me if you need help writing your own.</p></li>
 <li><p><code>ACCESS_1</code> runs after the first access check.  Extra arguments:</p>
 
 <ul>
-<li>repo</li>
-<li>user</li>
-<li>'R' or 'W'</li>
-<li>'any'</li>
-<li>result (see notes below)</li>
+<li>repo
+</li>
+<li>user
+</li>
+<li>'R' or 'W'
+</li>
+<li>'any'
+</li>
+<li>result (see notes below)
+</li>
 </ul>
 
 <p>'result' is the return value of the access() function.  If it contains the
@@ -151,13 +191,20 @@ as it returns from the trigger</em>.</p></li>
 update hook to check the ref.  Extra arguments:</p>
 
 <ul>
-<li>repo</li>
-<li>user</li>
-<li>any of W, +, C, D, WM, +M, CM, DM</li>
-<li>the ref being updated (e.g., 'refs/heads/master')</li>
-<li>result</li>
-<li>old SHA</li>
-<li>new SHA</li>
+<li>repo
+</li>
+<li>user
+</li>
+<li>any of W, +, C, D, WM, +M, CM, DM
+</li>
+<li>the ref being updated (e.g., 'refs/heads/master')
+</li>
+<li>result
+</li>
+<li>old SHA
+</li>
+<li>new SHA
+</li>
 </ul>
 
 <p><code>ACCESS_2</code> also runs on each <a href="vref.html">VREF</a> that gets checked.  In this case
@@ -172,32 +219,46 @@ trigger <em>will</em> run.</p></li>
 Extra arguments:</p>
 
 <ul>
-<li>repo</li>
-<li>user</li>
-<li>'R' or 'W'</li>
-<li>'any'</li>
+<li>repo
+</li>
+<li>user
+</li>
+<li>'R' or 'W'
+</li>
+<li>'any'
+</li>
 <li>the git command ('git-receive-pack', 'git-upload-pack', or
-'git-upload-archive') being invoked.</li>
+'git-upload-archive') being invoked.
+</li>
 </ul></li>
 <li><p><code>PRE_CREATE</code> and <code>POST_CREATE</code> run just before and after a new "<a href="wild.html">wild</a>"
-repo is created by user action.  Extra arguments:</p>
+repo is created by user action.  In addition, any command that creates a
+repo (like 'fork') or potentially changes permissions (like 'perms') may
+choose to run <code>POST_CREATE</code>.  Extra arguments:</p>
 
 <ul>
-<li>repo</li>
-<li>user</li>
+<li>repo
+</li>
+<li>user
+</li>
 <li>invoking operation
 <ul>
-<li>'R' for fetch/clone/ls-remote, 'W' for push</li>
+<li>'R' for fetch/clone/ls-remote, 'W' for push
+</li>
 <li>can also be anything set by the external command running the
-trigger (e.g., see the perms and fork commands).</li>
-</ul></li>
+trigger (e.g., see the perms and fork commands).  This lets the
+trigger code know how it was invoked.
+</li>
+</ul>
+</li>
 </ul>
 
 <p>They are also run when a <em>normal</em> repo is created (say by adding a "repo
 foo" line to the conf file).  This case has only one extra argument:</p>
 
 <ul>
-<li>repo</li>
+<li>repo
+</li>
 </ul></li>
 <li><p><code>POST_COMPILE</code> runs after an admin push has successfully "compiled" the
 config file.  By default, the next thing is to update the ssh authkeys

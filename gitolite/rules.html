@@ -11,6 +11,29 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
@@ -18,19 +41,21 @@
 |
     <a href="index.html">main page</a>
 |
+    <a href="gitolite.html">single-page</a>
+|
     <a href="index.html#license">license</a>
 </p>
 <p style="text-align:center">
 <font color="gray">This is for gitolite "g3"; for older (v2.x) documentation click <a href="http://sitaramc.github.com/gitolite/g2/master-toc.html">here</a></font>
 </p>
-<h2><a name="rules"></a> access rules</h2>
+<h1><a name="rules"></a> access rules</h1>
 
 <p>In the following description, "user" means "user or a <a href="groups.html">group</a> that
 he/she is a member of", and "repo" means "repo, or a group that it is a member
 of, or a (<a href="wild.html">wild</a> repo) pattern that matches it, or a group that contains a
 pattern that matches it".</p>
 
-<h3>what do rules look like</h3>
+<h2>what do rules look like</h2>
 
 <p>Here's an example ruleset.</p>
 
@@ -52,11 +77,15 @@ repo foo
 <p>The most commonly used permissions are:</p>
 
 <ul>
-<li>R, for read only</li>
-<li>RW, for push existing ref or create new ref</li>
+<li>R, for read only
+</li>
+<li>RW, for push existing ref or create new ref
+</li>
 <li>RW+, for  "push -f" or ref deletion allowed (i.e., destroy
-information)</li>
-<li><code>-</code> (the minus sign), to <strong>deny</strong> access.</li>
+information)
+</li>
+<li><code>-</code> (the minus sign), to <strong>deny</strong> access.
+</li>
 </ul>
 
 <p>There are also other, less commonly used, <a href="write-types.html">types of permissions</a>.</p>
@@ -69,12 +98,12 @@ checks and controls that you can't do with just the normal ref (like
 refs/heads/master) being pushed.  The most common example is restricting
 pushes by dir/file name, but there are lots of other possibilities.</font></p>
 
-<h3>how are the rules checked</h3>
+<h2>how are the rules checked</h2>
 
 <p>Note that gitolite first <a href="rules.html#rule-accum">accumulates the rules</a> before checking
 access.</p>
 
-<h4>read access -- clone, fetch, archive</h4>
+<h3>read access -- clone, fetch, archive</h3>
 
 <p>Read access is checked once, just before passing control to git-upload-pack or
 git-archive-pack.  At this point gitolite only knows the repo name, the user
@@ -93,7 +122,7 @@ line 3 does not prevent wally from cloning the repo, because line 4 permits
 it.  (This is the default behaviour.  You can change that by using the
 <a href="rules.html#deny-rules">deny-rules</a> option).</p>
 
-<h4>write access -- push</h4>
+<h3>write access -- push</h3>
 
 <p>Write access is checked twice, once before passing control to
 git-receive-pack, and once from within the update hook.</p>
@@ -124,11 +153,14 @@ examined <em>in the sequence</em> they appear in the conf file</p></li>
 <li><p>for each rule:</p>
 
 <ul>
-<li>If the ref does not match the <a href="refex.html">refex</a>, the rule is skipped.</li>
-<li>If it's a deny rule, access is denied and the matching stops.</li>
+<li>If the ref does not match the <a href="refex.html">refex</a>, the rule is skipped.
+</li>
+<li>If it's a deny rule, access is denied and the matching stops.
+</li>
 <li>If the permission field matches the specific <a href="write-types.html">type of
 write</a> operation, access is allowed and the matching
-stops.</li>
+stops.
+</li>
 </ul></li>
 <li><p>If no rule ends with a decision, ("fallthru"), access is denied.</p></li>
 </ul>
@@ -136,7 +168,7 @@ stops.</li>
 <p>Now all you need is to understand how <a href="refex.html">refex</a> matching happens and how the
 permissions match the various <a href="write-types.html">types of write operations</a>.</p>
 
-<h3><a name="permsum"></a> summary of permissions</h3>
+<h2><a name="permsum"></a> summary of permissions</h2>
 
 <p>The full set of permissions, in regex syntax, is <code>-|R|RW+?C?D?M?</code>.  This
 expands to one of <code>-</code>, <code>R</code>, <code>RW</code>, <code>RW+</code>, <code>RWC</code>, <code>RW+C</code>, <code>RWD</code>, <code>RW+D</code>, <code>RWCD</code>,
@@ -200,32 +232,59 @@ that matches it", up at the top of this document.</p>
 
 <p>The access rules above show that you cannot make an exception to a group for
 the first check, i.e., you cannot lock Wally out of read access that other
-members of @staff have.</p>
+members of @staff have, because read access does not look at "deny" rules by
+default.</p>
 
-<p>Here's another situation.  Let's say you have this at the end of your
-gitolite.conf file:</p>
+<p>This section will show how to make that happen.  We'll use <a href="external.html">'gitweb' and
+'daemon'</a> instead of Wally, but it could, of course, be any user or
+group or list (like, say, '@interns') that needs to be restricted.</p>
 
-<pre><code>repo @all
-    R   =   gitweb daemon
+<p>We'll consider two cases.  In the first case, the "secret" repos are fewer in
+number, and are enumerated in some group called @secret for convenience.</p>
+
+<pre><code># put this at or near the top of the conf file, or at least before any
+# rules that give 'gitweb' and 'daemon' any kind of access
+
+repo @secret
+    -   =   gitweb daemon
+    option deny-rules = 1
+    # make sure you do not set deny-rules to 0 for these repos later
 </code></pre>
 
-<p>but you don't want the gitolite-admin repo showing up on gitweb.  This is the
-same situation -- you want to make an exception in '@all' this time.</p>
+<p>Now imagine, worst case, you have this somewhere after the above:</p>
 
-<p>Here's how to do that:</p>
+<pre><code>repo @all
+    R   =   @all
+</code></pre>
 
-<pre><code>repo gitolite-admin
+<p>The "deny-rules" option applies, as you can see, only to the secret repos.  It
+forces gitolite to pay attention to any deny rules, and since the deny rule
+for those two users appears first, access is denied to them.</p>
+
+<p>The second case is where the "open" repos are fewer.</p>
+
+<pre><code># put this at or near the top of the conf file, or at least before any
+# rules that give 'gitweb' and 'daemon' any access
+
+repo @all
     -   =   gitweb daemon
     option deny-rules = 1
 
-repo @all
+repo @open
     R   =   gitweb daemon
+    option deny-rules = 0
+    # make sure you do not set deny-rules to 1 for these repos later
 </code></pre>
 
-<p>When you set the 'deny-rules' option for a repo, you're telling the pre-git
-checks (i.e., the read access check and the first write access check), to pay
-attention to the deny rules, which otherwise they ignore.</p>
+<p>To see why this works, you need to remember that for <a href="options.html">options</a> and
+<a href="git-config.html">config</a> lines, a later setting <a href="git-config.html#override_conf">overrides</a> earlier
+ones.  So we set it to 1 for all repos, then selectively set it to 0 for some.</p>
+
+<p>This means the "deny-rules" option applies to <em>all the repos except the "open"
+repos</em>, so the deny rule kicks in and denies access to those repos for those
+users.</p>
 
 <p>Note that, any time deny rules are in play, the order matters; the <code>-</code> rule
-must come <em>before</em> the <code>R</code> rule.  Also, as a reminder, refexes are ignored for
-the first check.</p>
+must come <em>before</em> the <code>R</code> rule.  That is why the comments tell you to put
+that stuff at the top of the conf.  Also, as a reminder, refexes are ignored
+for the first check.</p>

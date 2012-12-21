@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -74,7 +99,7 @@ instructions are to be read as "on gitolite admin's workstation".</p>
 have a clone of the gitosis-admin repo so now you have both).</p></li>
 <li><p><strong>Convert</strong> your gitosis config file and append it to your gitolite config
 file.  Substitute the path for your gitosis-admin clone in <code>$GSAC</code> below,
-and similarly the path for your gito<strong>lite</strong>-admin clone in <code>$GLAC</code>.  (The
+and similarly the path for your gito*<em>lite</em>*-admin clone in <code>$GLAC</code>.  (The
 convert-gitosis-conf program is a standalone program that you can bring
 over from any gitolite clone; you don't have to install all of gitolite on
 your workstation to use this):</p>

@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -47,19 +72,19 @@ server.  That won't work.</p>
 
 <blockquote>
   <hr />
-
-<p>Normally, gitolite is hosted on a user that no one accesses directly --
-  you log on to the server using some other userid, and then <code>su - git</code>.  In
-  this scenario, there <em>is</em> no key being used for shell access, so there is
-  no conflict.</p>
-
-<p>An alternative method is to use two different keys, and a <a href="sts.html#ssh-ha">host
-  alias</a> to distinguish the two.</p>
-
-<p><a href="emergencies.html#ce">common errors</a> has some links to background information on this
-  issue.</p>
-
-<hr />
+  
+  <p>Normally, gitolite is hosted on a user that no one accesses directly --
+    you log on to the server using some other userid, and then <code>su - git</code>.  In
+    this scenario, there <em>is</em> no key being used for shell access, so there is
+    no conflict.</p>
+  
+  <p>An alternative method is to use two different keys, and a <a href="sts.html#ssh-ha">host
+    alias</a> to distinguish the two.</p>
+  
+  <p><a href="emergencies.html#ce">common errors</a> has some links to background information on this
+    issue.</p>
+  
+  <hr />
 </blockquote>
 
 <p>The 'setup' command has other uses, so you will be running it at other times

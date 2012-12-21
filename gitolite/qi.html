@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -37,13 +62,15 @@ like that, there are <a href="install.html">other install methods</a>.</p></li>
 
 <ul>
 <li>Also, this key does not already have shell access to this gitolite
-<a href="install.html#nnc">hosting user</a>.</li>
+<a href="install.html#nnc">hosting user</a>.
+</li>
 </ul></li>
 <li><p>The setup command does not generate any warnings.</p>
 
 <ul>
 <li>If it does, please see <a href="emergencies.html#ce">common errors</a> and fix things before
-continuing, or read the more complete <a href="setup.html">setup</a> page.</li>
+continuing, or read the more complete <a href="setup.html">setup</a> page.
+</li>
 </ul></li>
 </ul>
 

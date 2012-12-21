@@ -11,12 +11,37 @@
     pre         { margin-left:  2em;    background:  #ddf; text-color: #000; }
     pre code    { font-size:    1.1em;  background:  #ddf; text-color: #000; }
 </style>
+<style>
+   body{counter-reset: section}
+   h1{counter-reset: sub-section}
+   h2{counter-reset: composite}
+   h3{counter-reset: detail}
+
+   h1:before {
+     counter-increment: section;
+     content: counter(section) ". ";
+   }
+   h2:before {
+     counter-increment: sub-section;
+     content: counter(section) "." counter(sub-section) ". ";
+   }
+   h3:before {
+     counter-increment: composite;
+     content: counter(section) "." counter(sub-section) "." counter(composite) ". ";
+   }
+   h4:before {
+     counter-increment: detail;
+     content: counter(section) "." counter(sub-section) "." counter(composite) "." counter(detail) ". ";
+   }
+</style>
 </head>
 
 <p style="text-align:center">
     <a href="master-toc.html">master TOC</a>
 |
     <a href="index.html">main page</a>
+|
+    <a href="gitolite.html">single-page</a>
 |
     <a href="index.html#license">license</a>
 </p>
@@ -77,12 +102,16 @@ gitolite sets the "subconf name" to "foo".</p>
 gitolite will only process "repo" lines for:</p>
 
 <ul>
-<li>A repo called "foo".</li>
+<li>A repo called "foo".
+</li>
 <li>A group called "@foo", as long as the group is defined in the main conf
-file (i.e., <em>outside</em> "foo.conf").</li>
-<li>A member of a group called "@foo" (again, defined outside).</li>
+file (i.e., <em>outside</em> "foo.conf").
+</li>
+<li>A member of a group called "@foo" (again, defined outside).
+</li>
 <li>A repo that matches a member of a group called "@foo" if that member is a
-regular expression pattern.</li>
+regular expression pattern.
+</li>
 </ul>
 
 <p>Here's an example.  If the main conf file contains</p>

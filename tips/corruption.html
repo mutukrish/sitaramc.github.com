@@ -37,6 +37,24 @@ studies.</p>
 
 <h2>case 1: Kolkata Korruption -- 2 missing tree objects</h2>
 
+<p>UPDATE 2013-01-11 13:28 Fri</p>
+
+<p>This should be MUCH easier</p>
+
+<pre><code>on bad:
+    git fsck | grep -v dangling | cut -f3 -d' '
+
+then double check it's a list of SHAs
+
+on good, with this list:
+    git pack-objects --revs pack &lt; list
+
+then copy the two pack* files (pack and idx) to the bad repo's
+objects/pack directory.
+
+That should be it.
+</code></pre>
+
 <p>what finally worked:</p>
 
 <pre><code># on some good repo
