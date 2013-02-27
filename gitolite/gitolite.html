@@ -2474,6 +2474,37 @@ set this on each server, despite the possible CPU overhead:</p>
 <pre><code>git config --global receive.fsckObjects true
 </code></pre>
 
+<h3>appendix C: moving the admin repo to a different master</h3>
+
+<p>Moving only some repos (other than the gitolite-admin repo) to a different
+master is easy.  Just make the change in the gitolite.conf file, add, commit,
+and push.</p>
+
+<p>Even for the gitolite-admin repo, if the current master is ok, it's the same
+thing; just make the change and push <em>to the current master</em>.  Subsequent
+pushes will go to the new master, of course.</p>
+
+<p>But if the current master is already dead, there's a bit of a catch-22.  You
+can't push to the master because it is dead, and you can't push to any slave
+because they won't accept updates from anywhere but the server they think is
+the master.</p>
+
+<p>Here's how to resolve this:</p>
+
+<ol>
+<li><p>On <em>each</em> slave:</p>
+
+<ul>
+<li><p>edit <code>~/.gitolite/conf/gitolite.conf</code> to change the master and slave
+options for the gitolite-admin repo.</p></li>
+<li><p>run <code>gitolite setup</code></p></li>
+</ul></li>
+<li><p>Now clone the admin repo from the <em>new</em> master to your workstation, change
+the options for the rest of the repos (if needed), then add/commit/push.</p></li>
+</ol>
+
+<p>And that should be all you need to do.</p>
+
 <hr />
 
 <h2><a name="deleg-deleg"></a> delegating access control responsibilities</h2>
@@ -7057,6 +7088,8 @@ the files to make sure this worked properly</em></p></li>
 <li><a href="gitolite.html#mirroring-HOSTNAME">appendix A: HOSTNAME substitution</a>
 </li>
 <li>appendix B: efficiency versus paranoia
+</li>
+<li>appendix C: moving the admin repo to a different master
 </li>
 </ul>
 </li>
