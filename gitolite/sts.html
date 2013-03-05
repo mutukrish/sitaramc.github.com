@@ -272,11 +272,7 @@ example it could be</p>
 
 <pre><code>SHELL_USERS_LIST        =&gt;  "$ENV{HOME}/.gitolite.shell-users",
 </code></pre></li>
-<li><p>add the line <code>'Shell::input',</code> to the <code>INPUT</code> list in the rc file.  This
-must be the first item on the list (possibly preceded by CpuTime, if
-you're using that).</p></li>
-<li><p>add the line <code>'post-compile/ssh-authkeys-shell-users',</code> to the
-<code>POST_COMPILE</code> list, <em>after</em> the <code>'post-compile/ssh-authkeys',</code> line.</p></li>
+<li><p>enable the trigger by uncommenting the 'Shell' line in the ENABLE list.</p></li>
 </ul>
 
 <p>Then run <code>gitolite compile; gitolite trigger POST_COMPILE</code> or push a dummy
@@ -291,12 +287,12 @@ fingerprint of the key that finally matched, so normally all you have is the
 
 <p>However, if you replace</p>
 
-<pre><code>'post-compile/ssh-authkeys',
+<pre><code>'ssh-authkeys',
 </code></pre>
 
-<p>in the <code>POST_COMPILE</code> trigger list in the rc file with</p>
+<p>in the ENABLE list with</p>
 
-<pre><code>'post-compile/ssh-authkeys --key-file-name',
+<pre><code>'ssh-authkeys --key-file-name',
 </code></pre>
 
 <p>then an extra argument is added after the username in the "command" variable

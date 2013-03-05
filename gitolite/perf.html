@@ -67,8 +67,7 @@ new wild repo, might be a little slow, and the log file will tell you a
 bit more detail on what took time.</p></li>
 <li><p>If you don't use gitweb or git-daemon, or use them but are perfectly happy
 to control access to them from outside gitolite, you can comment out the
-corresponding lines in the POST_CREATE and POST_COMPILE trigger lists in
-the rc file.</p></li>
+corresponding lines in the ENABLE list the rc file.</p></li>
 <li><p>If you can't get rid of those scripts, and they are still taking too long,
 you can make them run in the background.  They'll eventually finish but
 the user doesn't have to wait.  See src/triggers/bg.  <em>This should not

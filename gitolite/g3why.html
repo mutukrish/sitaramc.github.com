@@ -110,15 +110,12 @@ not?</p>
 write your own, though they do have to be in perl (because they're not
 standalone programs).</p>
 
-<p>Once the code is written and placed in the right place, all a site has to
-do to enable it is to uncomment some lines in the rc file:</p>
+<p>Once the code is written and placed in the right place, all you have to do
+to enable it is to uncomment some lines in the ENABLE list in the rc file:</p>
 
-<pre><code># these will run in sequence during the conf file parse
-SYNTACTIC_SUGAR             =&gt;
-    [
-        # 'continuation-lines',
-        # 'keysubdirs-as-groups',
-    &lt;etc&gt;
+<pre><code># 'continuation-lines',
+# 'keysubdirs-as-groups',
+&lt;etc&gt;
 </code></pre></li>
 <li><p>roll your own</p>
 

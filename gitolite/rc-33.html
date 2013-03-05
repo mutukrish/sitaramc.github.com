@@ -1,6 +1,6 @@
 
 <head>
-    <title>the "rc" file (`$HOME/.gitolite.rc`)</title>
+    <title>the v3.0 to v3.3 "rc" file (`$HOME/.gitolite.rc`)</title>
 <style>
     body        { background: #fff; text-color: #000; margin-left:  40px;   font-size:  0.9em;  font-family: sans-serif; max-width: 800px; }
     h1          { background: #ffb; text-color: #000; margin-left: -30px;   border-top:    5px  solid #ccc; }
@@ -48,13 +48,9 @@
 <p style="text-align:center">
 <font color="gray">This is for gitolite "g3"; for older (v2.x) documentation click <a href="http://sitaramc.github.com/gitolite/g2/master-toc.html">here</a></font>
 </p>
-<h1>the "rc" file (<code>$HOME/.gitolite.rc</code>)</h1>
+<h1>the v3.0 to v3.3 "rc" file (<code>$HOME/.gitolite.rc</code>)</h1>
 
-<p><strong>IMPORTANT</strong>: if you have a v3.0-v3.3 rc file it will still work.  In fact
-internally the v3.4 rc file data gets converted to the v3.3 format.  So just
-because you upgraded gitolite doesn't mean you have to change your rc file!</p>
-
-<p><strong>v3.3 or before</strong>: <a href="rc-33.html">this</a> is the document you need.</p>
+<p><strong>NOTE 1</strong>: if you're using v3.4 and above, see <a href="rc.html">this</a>.</p>
 
 <p><strong>NOTE 2</strong>: if you're migrating from g2, there are some settings that MUST be
 dealt with <strong>before</strong> running <code>gitolite setup</code>; please read the
@@ -77,11 +73,11 @@ sure the brackets and braces stay matched up!</p>
 gitolite.  As you can see there are 3 types of variables in it:</p>
 
 <ul>
-<li>a lot of simple variables (like <code>UMASK</code>, <code>GIT_CONFIG_KEYS</code>, etc)
+<li>simple variables (like <code>UMASK</code>)
 </li>
-<li>a hash or two (like <code>ROLES</code>)
+<li>lists (like <code>POST_COMPILE</code>, <code>POST_CREATE</code>)
 </li>
-<li>and one large list of features to be enabled (<code>ENABLE</code>)
+<li>hashes (like <code>ROLES</code>, <code>COMMANDS</code>)
 </li>
 </ul>
 

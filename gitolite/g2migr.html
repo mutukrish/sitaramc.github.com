@@ -137,10 +137,9 @@ eventually but not right away.  It's almost certain to be renamed anyway.</p></l
 <li><p><code>GL_NO_DAEMON_NO_GITWEB</code> <strong>dropped</strong>, <strong>requires presetting</strong>.  Default
 will clobber your projects.list file and git-daemon-export-ok files.</p>
 
-<p>Comment out the appropriate lines in the rc file, in the <code>POST_COMPILE</code>
-<em>and</em> the <code>POST_CREATE</code> trigger sections.  As a bonus, gitweb and daemon
-can now be separately disabled, instead of both being tied to the same
-setting.</p></li>
+<p>Comment out the 'daemon' and 'gitweb' lines in the ENABLE list in the rc
+file.  As you can see, gitweb and daemon can now be separately disabled,
+instead of both being tied to the same setting.</p></li>
 <li><p><code>GL_NO_SETUP_AUTHKEYS</code> <strong>dropped</strong>, <strong>requires presetting</strong>.  Default will
 clobber your authkeys file.</p>
 

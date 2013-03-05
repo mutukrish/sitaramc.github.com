@@ -109,7 +109,7 @@ shipped with gitolite, with a brief description of each</p></li>
 
 <ul>
 <li><em>Commands</em> can be run from the shell command line.  Among those, the ones
-listed in the COMMANDS hash of the rc file can also be run remotely.
+in the ENABLE list in the rc file can also be run remotely.
 </li>
 <li><em>Hooks</em> are standard git hooks.
 </li>
@@ -226,7 +226,7 @@ checking for the presence of env var <code>GL_USER</code>.</p>
 Naturally, a remote user will see a much smaller list than the server user.</p>
 
 <p>You allow a command to be run from remote clients by adding its name to (or
-uncommenting it if it's already added but commented out) the COMMANDS hash in
+uncommenting it if it's already added but commented out) the ENABLE list in
 the <a href="rc.html">rc</a> file.</p>
 
 <h3><a name="hooks"></a> hooks and gitolite</h3>
@@ -259,8 +259,8 @@ lines), while the parser in the core gitolite engine does not change.</p>
 <p>If you want to write your own sugar scripts, please read the "your own sugar"
 section in <a href="dev-notes.html">dev-notes</a> first then email me.</p>
 
-<p>You enable a sugar script by adding it to the <code>SYNTACTIC_SUGAR</code> list in the rc
-file.</p>
+<p>You enable a sugar script by uncommenting the feature name in the ENABLE list
+in the rc file.</p>
 
 <h3>triggers</h3>
 

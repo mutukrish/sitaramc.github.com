@@ -74,11 +74,17 @@ about write access control!</strong></p></li>
 <p>Back on your workstation:</p>
 
 <ul>
-<li><p><a href="repos.html">Add them</a> to conf/gitolite.conf in your clone of the admin repo,
-then commit and push the change.</p>
+<li><p>If the repos are normal repos, <a href="repos.html">add them</a> to conf/gitolite.conf in
+your clone of the admin repo, then commit and push the change.</p>
 
-<p>If the repos are already covered by some <a href="wild.html">wild</a> pattern, this is
-optional.</p></li>
+<p>If the repos are <a href="wild.html">wildcard</a> repos that already match some pattern in
+the conf file, you need to manually create the gl-creator file, like so:</p>
+
+<pre><code>echo username &gt; ~/repositories/path/to/repo.git/gl-creator
+</code></pre>
+
+<p>I haven't yet found this to be common enough to bother wrapping it in a
+nice interface or command.</p></li>
 </ul>
 
 <h2><a name="moving"></a> moving servers</h2>

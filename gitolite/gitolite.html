@@ -1666,7 +1666,13 @@ only accept a straight line series of commits).
 
 <h2><a name="rc-rc"></a> the "rc" file (<code>$HOME/.gitolite.rc</code>)</h2>
 
-<p><strong>NOTE</strong>: if you're migrating from g2, there are some settings that MUST be
+<p><strong>IMPORTANT</strong>: if you have a v3.0-v3.3 rc file it will still work.  In fact
+internally the v3.4 rc file data gets converted to the v3.3 format.  So just
+because you upgraded gitolite doesn't mean you have to change your rc file!</p>
+
+<p><strong>v3.3 or before</strong>: <a href="rc-33.html">this</a> is the document you need.</p>
+
+<p><strong>NOTE 2</strong>: if you're migrating from g2, there are some settings that MUST be
 dealt with <strong>before</strong> running <code>gitolite setup</code>; please read the
 <a href="gitolite.html#migr-migr">migration</a> page and linked pages, and especially the one on "presetting
 the rc file"</p>
@@ -1685,11 +1691,11 @@ sure the brackets and braces stay matched up!</p>
 gitolite.  As you can see there are 3 types of variables in it:</p>
 
 <ul>
-<li>simple variables (like <code>UMASK</code>)
+<li>a lot of simple variables (like <code>UMASK</code>, <code>GIT_CONFIG_KEYS</code>, etc)
 </li>
-<li>lists (like <code>POST_COMPILE</code>, <code>POST_CREATE</code>)
+<li>a hash or two (like <code>ROLES</code>)
 </li>
-<li>hashes (like <code>ROLES</code>, <code>COMMANDS</code>)
+<li>and one large list of features to be enabled (<code>ENABLE</code>)
 </li>
 </ul>
 
@@ -2779,11 +2785,17 @@ about write access control!</strong></p></li>
 <p>Back on your workstation:</p>
 
 <ul>
-<li><p><a href="gitolite.html#repos-repos">Add them</a> to conf/gitolite.conf in your clone of the admin repo,
-then commit and push the change.</p>
+<li><p>If the repos are normal repos, <a href="gitolite.html#repos-repos">add them</a> to conf/gitolite.conf in
+your clone of the admin repo, then commit and push the change.</p>
 
-<p>If the repos are already covered by some <a href="gitolite.html#wild-wild">wild</a> pattern, this is
-optional.</p></li>
+<p>If the repos are <a href="gitolite.html#wild-wild">wildcard</a> repos that already match some pattern in
+the conf file, you need to manually create the gl-creator file, like so:</p>
+
+<pre><code>echo username &gt; ~/repositories/path/to/repo.git/gl-creator
+</code></pre>
+
+<p>I haven't yet found this to be common enough to bother wrapping it in a
+nice interface or command.</p></li>
 </ul>
 
 <h3><a name="rare-moving"></a> moving servers</h3>
@@ -3032,7 +3044,7 @@ shipped with gitolite, with a brief description of each</p></li>
 
 <ul>
 <li><em>Commands</em> can be run from the shell command line.  Among those, the ones
-listed in the COMMANDS hash of the rc file can also be run remotely.
+in the ENABLE list in the rc file can also be run remotely.
 </li>
 <li><em>Hooks</em> are standard git hooks.
 </li>
@@ -3149,7 +3161,7 @@ checking for the presence of env var <code>GL_USER</code>.</p>
 Naturally, a remote user will see a much smaller list than the server user.</p>
 
 <p>You allow a command to be run from remote clients by adding its name to (or
-uncommenting it if it's already added but commented out) the COMMANDS hash in
+uncommenting it if it's already added but commented out) the ENABLE list in
 the <a href="gitolite.html#rc-rc">rc</a> file.</p>
 
 <h4><a name="cust-hooks"></a> hooks and gitolite</h4>
@@ -3182,8 +3194,8 @@ lines), while the parser in the core gitolite engine does not change.</p>
 <p>If you want to write your own sugar scripts, please read the "your own sugar"
 section in <a href="gitolite.html#dev-notes-dev-notes">dev-notes</a> first then email me.</p>
 
-<p>You enable a sugar script by adding it to the <code>SYNTACTIC_SUGAR</code> list in the rc
-file.</p>
+<p>You enable a sugar script by uncommenting the feature name in the ENABLE list
+in the rc file.</p>
 
 <h4>triggers</h4>
 
@@ -3416,7 +3428,7 @@ can't do this for files and directories.</p>
 <p>Here's how:</p>
 
 <ol>
-<li><p>enable 'partial-copy' in the <code>PRE_GIT</code> section in the rc file.</p></li>
+<li><p>enable 'partial-copy' in the ENABLE list in the rc file.</p></li>
 <li><p>for each repo "foo" which has secret branches that a certain set of
 developers (we'll use a group called <code>@temp-emp</code> as an example) are not
 supposed to see, do this:</p>
@@ -4009,7 +4021,8 @@ becomes meaningless in terms of "number of new files" etc.</p>
 
 <p>Gitolite fires off external commands at 7 different times.  The <a href="gitolite.html#rc-rc">rc</a> file
 specifies what commands to run at each trigger point, but for illustration,
-here's an excerpt:</p>
+here's an excerpt.  <strong>Note that as of v3.4, this is <em>not</em> how the rc file
+looks like externally; please see the <a href="gitolite.html#rc-rc">rc file docs</a> for more</strong>.</p>
 
 <pre><code>%RC = (
 
@@ -4081,7 +4094,7 @@ require any arguments, so it works).</p>
 
 <ol>
 <li><p>any arguments mentioned in the rc file (for an example, see the renice
-command in the PRE_GIT trigger sequence),</p></li>
+command)</p></li>
 <li><p>the name of the trigger as a string (example, <code>"POST_COMPILE"</code>), so you
 can call the same program from multiple triggers and it can know where it
 was called from,</p></li>
@@ -4673,11 +4686,7 @@ example it could be</p>
 
 <pre><code>SHELL_USERS_LIST        =&gt;  "$ENV{HOME}/.gitolite.shell-users",
 </code></pre></li>
-<li><p>add the line <code>'Shell::input',</code> to the <code>INPUT</code> list in the rc file.  This
-must be the first item on the list (possibly preceded by CpuTime, if
-you're using that).</p></li>
-<li><p>add the line <code>'post-compile/ssh-authkeys-shell-users',</code> to the
-<code>POST_COMPILE</code> list, <em>after</em> the <code>'post-compile/ssh-authkeys',</code> line.</p></li>
+<li><p>enable the trigger by uncommenting the 'Shell' line in the ENABLE list.</p></li>
 </ul>
 
 <p>Then run <code>gitolite compile; gitolite trigger POST_COMPILE</code> or push a dummy
@@ -4692,12 +4701,12 @@ fingerprint of the key that finally matched, so normally all you have is the
 
 <p>However, if you replace</p>
 
-<pre><code>'post-compile/ssh-authkeys',
+<pre><code>'ssh-authkeys',
 </code></pre>
 
-<p>in the <code>POST_COMPILE</code> trigger list in the rc file with</p>
+<p>in the ENABLE list with</p>
 
-<pre><code>'post-compile/ssh-authkeys --key-file-name',
+<pre><code>'ssh-authkeys --key-file-name',
 </code></pre>
 
 <p>then an extra argument is added after the username in the "command" variable
@@ -5573,15 +5582,12 @@ not?</p>
 write your own, though they do have to be in perl (because they're not
 standalone programs).</p>
 
-<p>Once the code is written and placed in the right place, all a site has to
-do to enable it is to uncomment some lines in the rc file:</p>
+<p>Once the code is written and placed in the right place, all you have to do
+to enable it is to uncomment some lines in the ENABLE list in the rc file:</p>
 
-<pre><code># these will run in sequence during the conf file parse
-SYNTACTIC_SUGAR             =&gt;
-    [
-        # 'continuation-lines',
-        # 'keysubdirs-as-groups',
-    &lt;etc&gt;
+<pre><code># 'continuation-lines',
+# 'keysubdirs-as-groups',
+&lt;etc&gt;
 </code></pre></li>
 <li><p>roll your own</p>
 
@@ -5837,8 +5843,7 @@ new wild repo, might be a little slow, and the log file will tell you a
 bit more detail on what took time.</p></li>
 <li><p>If you don't use gitweb or git-daemon, or use them but are perfectly happy
 to control access to them from outside gitolite, you can comment out the
-corresponding lines in the POST_CREATE and POST_COMPILE trigger lists in
-the rc file.</p></li>
+corresponding lines in the ENABLE list the rc file.</p></li>
 <li><p>If you can't get rid of those scripts, and they are still taking too long,
 you can make them run in the background.  They'll eventually finish but
 the user doesn't have to wait.  See src/triggers/bg.  <em>This should not
@@ -6088,10 +6093,9 @@ eventually but not right away.  It's almost certain to be renamed anyway.</p></l
 <li><p><code>GL_NO_DAEMON_NO_GITWEB</code> <strong>dropped</strong>, <strong>requires presetting</strong>.  Default
 will clobber your projects.list file and git-daemon-export-ok files.</p>
 
-<p>Comment out the appropriate lines in the rc file, in the <code>POST_COMPILE</code>
-<em>and</em> the <code>POST_CREATE</code> trigger sections.  As a bonus, gitweb and daemon
-can now be separately disabled, instead of both being tied to the same
-setting.</p></li>
+<p>Comment out the 'daemon' and 'gitweb' lines in the ENABLE list in the rc
+file.  As you can see, gitweb and daemon can now be separately disabled,
+instead of both being tied to the same setting.</p></li>
 <li><p><code>GL_NO_SETUP_AUTHKEYS</code> <strong>dropped</strong>, <strong>requires presetting</strong>.  Default will
 clobber your authkeys file.</p>
 

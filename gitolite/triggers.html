@@ -73,7 +73,8 @@
 
 <p>Gitolite fires off external commands at 7 different times.  The <a href="rc.html">rc</a> file
 specifies what commands to run at each trigger point, but for illustration,
-here's an excerpt:</p>
+here's an excerpt.  <strong>Note that as of v3.4, this is <em>not</em> how the rc file
+looks like externally; please see the <a href="rc.html">rc file docs</a> for more</strong>.</p>
 
 <pre><code>%RC = (
 
@@ -145,7 +146,7 @@ require any arguments, so it works).</p>
 
 <ol>
 <li><p>any arguments mentioned in the rc file (for an example, see the renice
-command in the PRE_GIT trigger sequence),</p></li>
+command)</p></li>
 <li><p>the name of the trigger as a string (example, <code>"POST_COMPILE"</code>), so you
 can call the same program from multiple triggers and it can know where it
 was called from,</p></li>
