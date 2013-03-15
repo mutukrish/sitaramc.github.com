@@ -3657,6 +3657,9 @@ to gain access, using the information <a href="gitolite.html#sts-kfn">here</a>.<
 won't make sense until you read further, but I had to put it up here for folks
 who stop reading halfway!</p>
 
+<p><strong>IMPORTANT</strong>: VREFs is an advanced topic.  Be prepared to spend some time
+experimenting to understand things.</p>
+
 <p>Here's an example to start you off.</p>
 
 <pre><code>repo    r1
@@ -3682,9 +3685,11 @@ convenient as you read on.</p>
 <p>We know that "refs/heads/master" and such are normal git refs that are matched
 against the <a href="gitolite.html#rules-rules">rules</a> to decide if the push is to be allowed or denied.</p>
 
-<p>A VREF is just another ref that is checked against the rules.  For example,
-VREF/COUNT/5 means "this push has more than 5 changed files".  Or
-VREF/NAME/Makefile means "the file called Makefile was changed in this push".</p>
+<p>This ref is a "property" of the push.</p>
+
+<p>Similarly, there could be several other "properties" that you may want to test
+-- we call them "virtual" refs, or VREFs.  For example, "this push has more
+than 5 changed files".  Or "this push changed the file called Makefile".</p>
 
 <h3>how do I use a VREF?</h3>
 
