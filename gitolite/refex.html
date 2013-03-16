@@ -61,8 +61,9 @@ like this:</p>
 
 <pre><code>RW              =   alice
 </code></pre></li>
-<li><p>A refex not starting with <code>refs/</code> is assumed to start with <code>refs/heads/</code>.
-This means normal branches can be conveniently written like this:</p>
+<li><p>A refex not starting with <code>refs/</code> <font color="gray">(or <code>VREF/</code>)</font>
+is assumed to start with <code>refs/heads/</code>.  This means normal branches can be
+conveniently written like this:</p>
 
 <pre><code>RW  master      =   alice
 # becomes 'refs/heads/master' internally
