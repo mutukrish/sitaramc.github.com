@@ -446,7 +446,7 @@ namespace, starting with <code>pub/&lt;username&gt;/</code>).</p>
     R       =   READERS
 </code></pre>
 
-<p>(he could also add other roles but then he needs to read the documentation).</p>
+<p>(he could also add other <a href="gitolite.html#wild-roles">roles</a> but then he needs to read the documentation).</p>
 
 <p>Once he does this, you can then use the <code>perms</code> command (run <code>ssh git@host
 perms -h</code> for help) to set permissions for other users by specifying which
@@ -1760,24 +1760,26 @@ with regular expressions) is to allow anything and everything:
 
 <p>This specifies the role names allowed to be used by users running the
 <a href="gitolite.html#user-perms">perms</a> command.  The <a href="gitolite.html#wild-wild">wild</a> repos doc has more info on roles.</p></li>
-<li><p><code>DEFAULT_ROLE_PERMS</code>, string, default undef</p>
+<li><p><code>OWNER_ROLENAME</code>, string, default undef</p>
 
-<p>This sets default wildcard permissions for newly created wildcard repos.</p>
+<p>(requires v3.5 or later)</p>
 
-<p>If set, this value will be used as the default role permissions for new
-wildcard repositories. The user can change this value with the perms
-command as desired after repository creation; it is only a default.</p>
+<p>By default, permissions on a wild repo can only be set by the <em>creator</em> of
+the repo (using the <a href="gitolite.html#user-perms">perms</a> command).  But some sites want to allow
+other people to do this as well.</p>
 
-<p>Please be aware this is potentially a multi-line variable.  In most
-setups, it will be left undefined.  Some installations may benefit from
-setting it to <code>READERS @all</code>.</p>
+<p>To enable this behaviour, the server admin must first set this variable to
+some string, say 'OWNERS'.  (He must also add 'OWNERS' to the ROLES hash
+described in the previous bullet).</p>
 
-<p>If you want multiple roles to be assigned by default, here is how.  Note
-double quotes this time, due to the embedded newline, which in turn
-require the '@' to be escaped:</p>
+<p>The creator of the repo can then add other users to the OWNERS role using
+the <a href="gitolite.html#user-perms">perms</a> command.</p>
 
-<pre><code>DEFAULT_ROLE_PERMS  =&gt;  "READERS \@all\nWRITERS \@senior_devs",
-</code></pre></li>
+<p>The <a href="gitolite.html#user-perms">perms</a> command, the new "owns" command, and possibly other commands
+in future, will then give these users the same privileges that they give
+to the creator of the repo.</p>
+
+<p>(Also see the full documentation on <a href="gitolite.html#wild-roles">roles</a>).</p></li>
 <li><p><code>LOCAL_CODE</code>, string</p>
 
 <p>This is described in more detail <a href="gitolite.html#cust-localcode">here</a>.  Please be aware
@@ -2180,7 +2182,7 @@ metacharacters.</p>
   <hr />
 </blockquote>
 
-<h3>roles</h3>
+<h3><a name="wild-roles"></a> roles</h3>
 
 <p>The tokens READERS and WRITERS are called "role" names.  The access rules in
 the conf file decide what permissions these roles have, but they don't say
@@ -2191,7 +2193,7 @@ You can run <code>ssh git@host perms -h</code> for detailed help, but in brief, 
 command lets you give and take away roles to users.  <a href="gitolite.html#user-perms">This</a> has some
 more detail.</p>
 
-<h3>adding other roles</h3>
+<h4>adding other roles</h4>
 
 <p>If you want to have more than just the 2 default roles, say something like:</p>
 
@@ -2209,7 +2211,36 @@ more detail.</p>
 comments in that file for how to do that.  Be sure to run the 2 commands
 mentioned there after you have added the roles.</p>
 
-<h5><a name="wild-rolenamewarn"></a> <strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></h5>
+<h4>setting default roles</h4>
+
+<p>You can setup some default role assignments as soon as a new wild repo is
+created.</p>
+
+<p>Here's how:</p>
+
+<ul>
+<li><p>enable the 'set-default-roles' feature in the rc file by uncommenting it
+if it is already present or adding it to the ENABLE list if it is not.</p></li>
+<li><p>supply a set of default role assignments for a wild repo pattern by adding
+lines like this to the repo config para:</p>
+
+<pre><code>option default.roles-1  =   READERS @all
+option default.roles-2  =   WRITERS @senior-devs
+</code></pre></li>
+</ul>
+
+<p>This will then behave as if the <a href="gitolite.html#user-perms">perms</a> command was used immediately after
+the repo was created to add those two role assignments.</p>
+
+<p>If you want to simulate the old (pre v3.5) <code>DEFAULT_ROLE_PERMS</code> rc file
+variable, just add them under a <code>repo @all</code> line.  (Remember that this only
+affects newly created wild repos, despite the '@all' name).</p>
+
+<h4>specifying owners</h4>
+
+<p>See the section on <code>OWNER_ROLENAME</code> in the <a href="gitolite.html#rc-rc">rc file documentation</a>.</p>
+
+<h5><a name="wild-rolenamewarn"></a> <font color="red"><strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></font></h5>
 
 <p>Please make sure that none of the role names conflict with any of the user
 names or group names in the system.  For example, if you have a user called
@@ -6152,7 +6183,7 @@ If you want it somewhere else go ahead and move it, then place a symlink
 from the assumed location to the real one.</p></li>
 <li><p><code>GL_GET_MEMBERSHIPS_PGM</code> -- is now <code>GROUPLIST_PGM</code>, see
 <a href="gitolite.html#auth-ldap">here</a>.</p></li>
-<li><p><code>GL_WILDREPOS_DEFPERMS</code> -- is now <code>DEFAULT_ROLE_PERMS</code>.</p></li>
+<li><p><code>GL_WILDREPOS_DEFPERMS</code> -- is gone; see <a href="gitolite.html#wild-roles">roles</a> for how to do this.</p></li>
 <li><p><code>REPO_BASE</code> -- <strong>dropped</strong>, is now at a fixed location: <code>~/repositories</code>.
 If you want it somewhere else go ahead and move it, then place a symlink
 from the assumed location to the real one.</p></li>
@@ -7088,10 +7119,19 @@ the files to make sure this worked properly</em></p></li>
 </li>
 </ul>
 </li>
-<li>roles
-</li>
+<li><a href="gitolite.html#wild-roles">roles</a>
+<ul>
 <li>adding other roles
-      * <a href="gitolite.html#wild-rolenamewarn"><strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></a>
+</li>
+<li>setting default roles
+</li>
+<li>specifying owners
+<ul>
+<li><a href="gitolite.html#wild-rolenamewarn"><font color="red"><strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></font></a>
+</li>
+</ul>
+</li>
+</ul>
 </li>
 <li>listing wild repos
 </li>

@@ -161,7 +161,7 @@ metacharacters.</p>
   <hr />
 </blockquote>
 
-<h2>roles</h2>
+<h2><a name="roles"></a> roles</h2>
 
 <p>The tokens READERS and WRITERS are called "role" names.  The access rules in
 the conf file decide what permissions these roles have, but they don't say
@@ -172,7 +172,7 @@ You can run <code>ssh git@host perms -h</code> for detailed help, but in brief, 
 command lets you give and take away roles to users.  <a href="user.html#perms">This</a> has some
 more detail.</p>
 
-<h2>adding other roles</h2>
+<h3>adding other roles</h3>
 
 <p>If you want to have more than just the 2 default roles, say something like:</p>
 
@@ -190,7 +190,36 @@ more detail.</p>
 comments in that file for how to do that.  Be sure to run the 2 commands
 mentioned there after you have added the roles.</p>
 
-<h4><a name="rolenamewarn"></a> <strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></h4>
+<h3>setting default roles</h3>
+
+<p>You can setup some default role assignments as soon as a new wild repo is
+created.</p>
+
+<p>Here's how:</p>
+
+<ul>
+<li><p>enable the 'set-default-roles' feature in the rc file by uncommenting it
+if it is already present or adding it to the ENABLE list if it is not.</p></li>
+<li><p>supply a set of default role assignments for a wild repo pattern by adding
+lines like this to the repo config para:</p>
+
+<pre><code>option default.roles-1  =   READERS @all
+option default.roles-2  =   WRITERS @senior-devs
+</code></pre></li>
+</ul>
+
+<p>This will then behave as if the <a href="user.html#perms">perms</a> command was used immediately after
+the repo was created to add those two role assignments.</p>
+
+<p>If you want to simulate the old (pre v3.5) <code>DEFAULT_ROLE_PERMS</code> rc file
+variable, just add them under a <code>repo @all</code> line.  (Remember that this only
+affects newly created wild repos, despite the '@all' name).</p>
+
+<h3>specifying owners</h3>
+
+<p>See the section on <code>OWNER_ROLENAME</code> in the <a href="rc.html">rc file documentation</a>.</p>
+
+<h4><a name="rolenamewarn"></a> <font color="red"><strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></font></h4>
 
 <p>Please make sure that none of the role names conflict with any of the user
 names or group names in the system.  For example, if you have a user called

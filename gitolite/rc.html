@@ -145,24 +145,26 @@ with regular expressions) is to allow anything and everything:
 
 <p>This specifies the role names allowed to be used by users running the
 <a href="user.html#perms">perms</a> command.  The <a href="wild.html">wild</a> repos doc has more info on roles.</p></li>
-<li><p><code>DEFAULT_ROLE_PERMS</code>, string, default undef</p>
+<li><p><code>OWNER_ROLENAME</code>, string, default undef</p>
 
-<p>This sets default wildcard permissions for newly created wildcard repos.</p>
+<p>(requires v3.5 or later)</p>
 
-<p>If set, this value will be used as the default role permissions for new
-wildcard repositories. The user can change this value with the perms
-command as desired after repository creation; it is only a default.</p>
+<p>By default, permissions on a wild repo can only be set by the <em>creator</em> of
+the repo (using the <a href="user.html#perms">perms</a> command).  But some sites want to allow
+other people to do this as well.</p>
 
-<p>Please be aware this is potentially a multi-line variable.  In most
-setups, it will be left undefined.  Some installations may benefit from
-setting it to <code>READERS @all</code>.</p>
+<p>To enable this behaviour, the server admin must first set this variable to
+some string, say 'OWNERS'.  (He must also add 'OWNERS' to the ROLES hash
+described in the previous bullet).</p>
 
-<p>If you want multiple roles to be assigned by default, here is how.  Note
-double quotes this time, due to the embedded newline, which in turn
-require the '@' to be escaped:</p>
+<p>The creator of the repo can then add other users to the OWNERS role using
+the <a href="user.html#perms">perms</a> command.</p>
 
-<pre><code>DEFAULT_ROLE_PERMS  =&gt;  "READERS \@all\nWRITERS \@senior_devs",
-</code></pre></li>
+<p>The <a href="user.html#perms">perms</a> command, the new "owns" command, and possibly other commands
+in future, will then give these users the same privileges that they give
+to the creator of the repo.</p>
+
+<p>(Also see the full documentation on <a href="wild.html#roles">roles</a>).</p></li>
 <li><p><code>LOCAL_CODE</code>, string</p>
 
 <p>This is described in more detail <a href="cust.html#localcode">here</a>.  Please be aware
