@@ -5478,30 +5478,25 @@ annotated tags, nor does it check author/committer identity.  However, it is
 trivial to add your own code to do either (or if someone contributes it, to
 just "enable" what ships with gitolite in a disabled state).</p>
 
-<h4>gitorious</h4>
+<h4>gitorious and others</h4>
 
 <p>Anecdotally, gitorious is very hard to install.  Comparison with gitolite may
 be useless because I believe it doesn't have branch/tag level access control.
 However, I can't confirm or deny this because I can't find any documentation
-on the website.</p>
+on the website.  In addition, the main website hides the source code very
+well, so you already have a challenge!  [The only link I could find was tucked
+away at the bottom of the About page, in the License section].</p>
 
-<p>In addition, the main website hides the source code very well, so you already
-have a challenge!  [The only link I could find was tucked away at the bottom
-of the About page, in the License section].</p>
+<p>Gitorious has several, much newer, competitors offering web-based management,
+issue tracker, wiki, and so on; try googling for gitlab, gitblit, and
+rhodecode.</p>
 
-<h4>gitlab</h4>
+<p>However, to the best of my knowledge none of them offer branch level access
+controls (please tell me if you know different), which, since it is the main
+reason I wrote gitolite, makes them all somewhat moot.</p>
 
-<p>Gitlab is built on top of gitolite, but it does not allow branch-level access
-control which pretty much defeats the purpose of their switching from gitosis
-to gitolite if you ask me.</p>
-
-<p>If you like web-based management, issue tracker, wiki, and so on, you might
-like it.</p>
-
-<h4>others</h4>
-
-<p>Please send in patches to this doc if you know of other open source git
-hosting solutions that do access control.</p>
+<p>They are also unlikely to be as <a href="gitolite.html#cust-cust">customisable</a> as gitolite is, if you
+care about that sort of thing.</p>
 
 <hr />
 
@@ -7533,11 +7528,7 @@ the files to make sure this worked properly</em></p></li>
 </li>
 <li><a href="gitolite.html#why-gcr">Gerrit Code Review</a>
 </li>
-<li>gitorious
-</li>
-<li>gitlab
-</li>
-<li>others
+<li>gitorious and others
 </li>
 </ul>
 </li>
