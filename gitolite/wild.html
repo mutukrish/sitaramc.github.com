@@ -50,6 +50,47 @@
 </p>
 <h1>"wild" repos (user created repos)</h1>
 
+<ul>
+<li><a href="wild.html">"wild" repos (user created repos)</a>
+<ul>
+<li>quick introduction
+</li>
+<li>(admin) declaring wild repos in the conf file
+</li>
+<li><a href="wild.html#create">(user) creating a specific repo</a>
+</li>
+<li>a slightly different example
+</li>
+<li>repo patterns
+<ul>
+<li>pattern versus normal repo
+</li>
+<li>line-anchored regexes
+</li>
+</ul>
+</li>
+<li><a href="wild.html#roles">roles</a>
+<ul>
+<li>adding other roles
+<ul>
+<li><a href="wild.html#rolenamewarn"><font color="red"><strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></font></a>
+</li>
+</ul>
+</li>
+<li>setting default roles
+</li>
+<li>specifying owners
+</li>
+</ul>
+</li>
+<li>listing wild repos
+</li>
+<li>deleting a wild repo
+</li>
+</ul>
+</li>
+</ul>
+
 <h2>quick introduction</h2>
 
 <p>The wildrepos feature allows you to specify access control rules using regular
@@ -190,6 +231,17 @@ more detail.</p>
 comments in that file for how to do that.  Be sure to run the 2 commands
 mentioned there after you have added the roles.</p>
 
+<h4><a name="rolenamewarn"></a> <font color="red"><strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></font></h4>
+
+<p>Please make sure that none of the role names conflict with any of the user
+names or group names in the system.  For example, if you have a user called
+"foo" or a group called "@foo", make sure you do not include "foo" as a valid
+role in the ROLES hash.</p>
+
+<p>You can keep things sane by using UPPERCASE names for roles, while keeping all
+your user and group names lowercase; then you don't have to worry about this
+problem.</p>
+
 <h3>setting default roles</h3>
 
 <p>You can setup some default role assignments as soon as a new wild repo is
@@ -218,17 +270,6 @@ affects newly created wild repos, despite the '@all' name).</p>
 <h3>specifying owners</h3>
 
 <p>See the section on <code>OWNER_ROLENAME</code> in the <a href="rc.html">rc file documentation</a>.</p>
-
-<h4><a name="rolenamewarn"></a> <font color="red"><strong>IMPORTANT WARNING ABOUT THIS FEATURE</strong></font></h4>
-
-<p>Please make sure that none of the role names conflict with any of the user
-names or group names in the system.  For example, if you have a user called
-"foo" or a group called "@foo", make sure you do not include "foo" as a valid
-role in the ROLES hash.</p>
-
-<p>You can keep things sane by using UPPERCASE names for roles, while keeping all
-your user and group names lowercase; then you don't have to worry about this
-problem.</p>
 
 <h2>listing wild repos</h2>
 
